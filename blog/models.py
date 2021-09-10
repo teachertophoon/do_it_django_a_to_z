@@ -11,3 +11,6 @@ class Post(models.Model):
     # 관리자 페이지에서 작성한 Post의 제목 구성을 바꾸고 싶을 때
     def __str__(self):
         return f'[{self.pk}] {self.title}' # f는 format을 의미
+
+    def get_absolute_url(self):
+        return f'/blog/{self.pk}/'
