@@ -1,17 +1,179 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>Blog</title>
-</head>
-<body>
-    <h1>Blog</h1>
+{% load static %}
+<html>
+    <head>
+        <title>Blog</title>
+        <link href="{% static 'blog/bootstrap/bootstrap.css' %}" rel="stylesheet" type="text/css">
+        <script src="https://kit.fontawesome.com/f825ae5235.js" crossorigin="anonymous"></script>
+        <style type="text/css">
+            .google-icon {
+                color: red;
+                line-height: 21px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 네비게이션바 영역 (992px보다 크면 메뉴 확장버튼 숨겨짐, 배경은 밝은색) -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <!-- 브랜드 명을 입력하는 부분 -->
+                <a class="navbar-brand" href="#">Do It Django</a>
 
-    {% for p in post_list %}
-        <hr/>
-        <h2><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></h2>
-        <h4>{{ p.created_at }}</h4>
-        <p>{{ p.content }}</p>
-    {% endfor %}
-</body>
+                <!-- navbar-expand-lg 클래스를 nav 태그에서 사용한 경우는 992px보다 작을경우 아래 버튼 표시-->
+                <!-- 아래 버튼은 폰 화면 크기에서 메뉴를 보였다 숨겼다 하는 버튼-->
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent">
+
+                    <!-- 확장 버튼 아이콘 모양을 결정 -->
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- 위 button을 눌렸을 때 나타났다 사라지는 메뉴 부분-->
+                <!-- 메뉴 구성하는 부분 -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- 네비게이션의 좌측부분 (mr-auto 적용하여 좌측정렬)-->
+                    <ul class="navbar-nav mr-auto">
+                        <!-- 첫 번째 메뉴 -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="./index.html">Home</a>
+                        </li>
+                        <!-- 두 번째 메뉴 -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="./blog_list.html">Blog</a>
+                        </li>
+                        <!-- 세 번째 메뉴 -->
+                        <li class="nav-item active">
+                            <a class="nav-link" href="./about_me.html">About Me</a>
+                        </li>
+                        <!-- 네 번째 메뉴 (드롭다운 메뉴)-->
+                        <li class="nav-item dropdown">
+                            <!-- 드롭다운 메뉴를 펼쳤다 숨겼다 하는 버튼 -->
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+                                role="button" data-toggle="dropdown">
+                                Dropdown
+                            </a>
+                            <!-- 드롭다운 메뉴 구성 -->
+                            <div class="dropdown-menu">
+                                <!-- 첫 번째 메뉴 -->
+                                <a class="dropdown-item" href="#">Action</a>
+                                <!-- 두 번째 메뉴 -->
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <!-- 메뉴 구분선 -->
+                                <div class="dropdown-divider"></div>
+                                <!-- 세 번째 메뉴 -->
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <!-- 네비게이션의 우측부분 -->
+                    <!-- 로그인 버튼 -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Log In</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Modal -->
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!-- 모달 헤더 (모달의 제목과 닫기버튼 존재)-->
+                    <div class="modal-header">
+                        <h5 class="modal-title">Log In</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span> <!-- escape 문자 -->
+                        </button>
+                    </div>
+                    <!-- 모달 바디 (모달 내용을 삽입)-->
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-dark btn-block"><i class="fab fa-google google-icon"></i>&nbsp;&nbsp;Log in with Google</button>
+                                <button type="button" class="btn btn-outline-dark btn-block"><i class="far fa-envelope"></i> Log in with E-mail</button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-dark btn-block"><i class="far fa-envelope"></i> Sign up with E-mail</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container my-3">
+            <div class="row">
+                <div class="col-md-8 col-lg-9">
+                    {% for p in post_list %}
+                    <!-- Blog post -->
+                    <div class="card">
+                        <!-- 블로그 포스트 카드의 그림영역 -->
+                        <a href="#!">
+                            <img class="card-img-top" src="https://dummyimage.com/700x350/000000/fff">
+                        </a>
+                        <!-- 블로그 글의 요약 부분 -->
+                        <div class="card-body">
+                            <div class="small text-muted">{{ p.created_at }}
+                                <a href="#">작성자명 쓸 위치(개발예정)</a>
+                            </div>
+                            <h2 class="card-title h4">{{ p.title }}</h2>
+                            <p class="card-text">{{ p.content }}</p>
+                            <a class="btn btn-primary" href="{{ p.get_absolute_url }}">Read more</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Pagination -->
+                    <ul class="pagination justify-content-center mb-4">
+                        <li class="page-item">
+                            <a class="page-link" href="#">&larr; Older</a> <!-- Escape 문자 -->
+                        </li>
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Newer &rarr;</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                    <!-- Search widget -->
+                    <div class="card mb-4">
+                        <!-- 검색 영역의 헤더부분 -->
+                        <div class="card-header">Search</div>
+                        <!-- 검색 영역의 바디부분 (검색어와 검색버튼이 존재하는 영역)-->
+                        <div class="card-body">
+                            <div class="input-group">
+                                <input class="form-control" type="text" placeholder="검색어 입력">
+                                <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories widget -->
+                    <div class="card mb-4">
+                        <div class="card-header">Categories</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><a href="#">Web Design</a></li>
+                                        <li><a href="#">HTML</a></li>
+                                        <li><a href="#">Freebies</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    </body>
 </html>
