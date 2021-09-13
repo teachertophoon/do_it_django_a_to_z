@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from blog.models import Post
 
@@ -23,15 +23,23 @@ class PostList(ListView):
 #         }
 #     )
 
-def single_post_page(request, pk):
-    post = Post.objects.get(pk=pk)
+# CBV (Class Based View) 방식
+class PostDetail(DetailView):
+    model = Post
+    # 서버주소/blog/pk에서 pk 값을 가지고 자동으로 데이터베이스의 내용을 가져옴
+    # template 명은 post_detail.html (모델명_detail.html)
+    # template에서 사용할 변수명은 post (모델명)
 
-    return render(
-        request,
-        'blog/single_post_page.html',
-        {
-            'post': post,
-        }
-    )
+# FBV (Function Based View) 방식
+# def single_post_page(request, pk):
+#     post = Post.objects.get(pk=pk)
+#
+#     return render(
+#         request,
+#         'blog/post_detail.html',
+#         {
+#             'post': post,
+#         }
+#     )
 
 
