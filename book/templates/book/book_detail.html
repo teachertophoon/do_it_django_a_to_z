@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+</head>
+
+<!--
+
+- 책 제목: title (CharField, 30자 제한)
+- 저자: book_author (CharField, 128자 제한)
+- 출판사: publisher (CharField, 255자 제한)
+- 가격: price (IntegerField)
+- 출시일: release_date (DateTimeField)
+- 등록일: created_at (DateTimeField)
+- 수정일: updated_at (DateTimeField)
+- 책 설명: content (TextField)
+
+-->
+<body>
+    <h2>{{ book.title }}</h2>
+    <h4>{{ book.book_author }}</h4>
+    <h4>{{ book.publisher }}</h4>
+    <h4>{{ book.price }}</h4>
+    <h4>{{ book.release_date }}</h4>
+    <h4>{{ book.created_at }}</h4>
+    <h4>{{ book.updated_at }}</h4>
+    <p>{{ book.content }}</p>
+</body>
+</html>

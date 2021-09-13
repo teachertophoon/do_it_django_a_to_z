@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+</head>
+<body>
+
+{% for book in books %}
+
+<hr/>
+<h2>{{ book.title }}</h2>
+<h4>{{ book.price }}</h4>
+
+{% endfor %}
+
+</body>
+</html>
