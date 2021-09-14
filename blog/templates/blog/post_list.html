@@ -115,7 +115,11 @@
                     <div class="card">
                         <!-- 블로그 포스트 카드의 그림영역 -->
                         <a href="#!">
-                            <img class="card-img-top" src="{{ p.head_image.url }}">
+                            {% if p.head_image %}
+                            <img class="card-img-top" src="{{ p.head_image.url }}" alt="{{ p }} head image">
+                            {% else %}
+                            <img class="card-img-top" src="https://picsum.photos/seed/{{ p.id }}/800/200" alt="random_image">
+                            {% endif %}
                         </a>
                         <!-- 블로그 글의 요약 부분 -->
                         <div class="card-body">
