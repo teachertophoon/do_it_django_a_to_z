@@ -13,99 +13,9 @@
         </style>
 </head>
 <body>
-<!-- 네비게이션바 영역 (992px보다 크면 메뉴 확장버튼 숨겨짐, 배경은 밝은색) -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-        <!-- 브랜드 명을 입력하는 부분 -->
-        <a class="navbar-brand" href="#">Do It Django</a>
 
-        <!-- navbar-expand-lg 클래스를 nav 태그에서 사용한 경우는 992px보다 작을경우 아래 버튼 표시-->
-        <!-- 아래 버튼은 폰 화면 크기에서 메뉴를 보였다 숨겼다 하는 버튼-->
-        <button class="navbar-toggler" type="button" data-toggle="collapse"
-                data-target="#navbarSupportedContent">
+{% include 'blog/navbar.html' %}
 
-            <!-- 확장 버튼 아이콘 모양을 결정 -->
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- 위 button을 눌렸을 때 나타났다 사라지는 메뉴 부분-->
-        <!-- 메뉴 구성하는 부분 -->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <!-- 네비게이션의 좌측부분 (mr-auto 적용하여 좌측정렬)-->
-            <ul class="navbar-nav mr-auto">
-                <!-- 첫 번째 메뉴 -->
-                <li class="nav-item">
-                    <a class="nav-link" href="./index.html">Home</a>
-                </li>
-                <!-- 두 번째 메뉴 -->
-                <li class="nav-item">
-                    <a class="nav-link" href="./blog_list.html">Blog</a>
-                </li>
-                <!-- 세 번째 메뉴 -->
-                <li class="nav-item active">
-                    <a class="nav-link" href="./about_me.html">About Me</a>
-                </li>
-                <!-- 네 번째 메뉴 (드롭다운 메뉴)-->
-                <li class="nav-item dropdown">
-                    <!-- 드롭다운 메뉴를 펼쳤다 숨겼다 하는 버튼 -->
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-                       role="button" data-toggle="dropdown">
-                        Dropdown
-                    </a>
-                    <!-- 드롭다운 메뉴 구성 -->
-                    <div class="dropdown-menu">
-                        <!-- 첫 번째 메뉴 -->
-                        <a class="dropdown-item" href="#">Action</a>
-                        <!-- 두 번째 메뉴 -->
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <!-- 메뉴 구분선 -->
-                        <div class="dropdown-divider"></div>
-                        <!-- 세 번째 메뉴 -->
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
-            </ul>
-            <!-- 네비게이션의 우측부분 -->
-            <!-- 로그인 버튼 -->
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Log In</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<!-- Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <!-- 모달 헤더 (모달의 제목과 닫기버튼 존재)-->
-            <div class="modal-header">
-                <h5 class="modal-title">Log In</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span> <!-- escape 문자 -->
-                </button>
-            </div>
-            <!-- 모달 바디 (모달 내용을 삽입)-->
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-outline-dark btn-block"><i class="fab fa-google google-icon"></i>&nbsp;&nbsp;Log in with Google</button>
-                        <button type="button" class="btn btn-outline-dark btn-block"><i class="far fa-envelope"></i> Log in with E-mail</button>
-                    </div>
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-outline-dark btn-block"><i class="far fa-envelope"></i> Sign up with E-mail</button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="container my-3">
     <div class="row">
         <div class="col-md-8 col-lg-9" id="main-area">
@@ -145,10 +55,7 @@
     </div>
 </div>
 
-<!-- Footer-->
-<footer class="py-5 bg-dark">
-    <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2021</p></div>
-</footer>
+{% include 'blog/footer.html' %}
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
