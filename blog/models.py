@@ -12,7 +12,9 @@ class Post(models.Model):
     file_upload = models.FileField(upload_to='blog/files/%Y/%m/%d/', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    # CASCADE: 작성자 정보가 User 테이블에서 삭제되면 작성했던 글도 함께 삭제
+    # SET_NULL: 작성자 정보가 User 테이블에서 삭제되면 작성했던 글은 유지(author는 null)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     # 관리자 페이지에서 작성한 Post의 제목 구성을 바꾸고 싶을 때
     def __str__(self):
