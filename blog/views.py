@@ -38,6 +38,13 @@ class PostDetail(DetailView):
     # template 명은 post_detail.html (모델명_detail.html)
     # template에서 사용할 변수명은 post (모델명)
 
+    def get_context_data(self, **kwargs):
+        context = super(PostDetail, self).get_context_data()
+        context['categories'] = Category.objects.all()
+        context['no_category_post_count'] = Post.objects.filter(category=None)\
+            .count()
+        return context
+
 # FBV (Function Based View) 방식
 # def single_post_page(request, pk):
 #     post = Post.objects.get(pk=pk)
