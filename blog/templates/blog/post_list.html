@@ -5,7 +5,7 @@
 {% if post_list.exists %}
 {% for p in post_list %}
 <!-- Blog post -->
-<div class="card">
+<div class="card" id="post-{{ p.pk }}">
     <!-- 블로그 포스트 카드의 그림영역 -->
     <a href="#!">
         {% if p.head_image %}
@@ -16,6 +16,11 @@
     </a>
     <!-- 블로그 글의 요약 부분 -->
     <div class="card-body">
+        {% if p.category %}
+        <span class="badge badge-secondary float-right">{{ p.category }}</span>
+        {% else %}
+        <span class="badge badge-secondary float-right">미분류</span>
+        {% endif %}
         <div class="small text-muted">{{ p.created_at }}
             <a href="#">{{ p.author | upper }}</a>
         </div>

@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 
-from blog.models import Post
+from blog.models import Post, Category
+
 
 # CBV (Class Based View) 방식
 class PostList(ListView):
@@ -9,6 +10,13 @@ class PostList(ListView):
     ordering = '-pk'
     # template 명은 post_list.html (모델명_list.html)
     # template로 넘길 때 사용하는 변수명은 post_list (모델명_list)
+
+    def get_context_data(self, **kwargs):
+        context = super(PostList, self).get_context_data()
+        context['categories'] = Category.objects.all()
+        context['no_category_post_count'] = Post.objects\
+            .filter(category=None).count()
+        return context
 
 # FBV (Function Based View) 방식
 # def index(request):
