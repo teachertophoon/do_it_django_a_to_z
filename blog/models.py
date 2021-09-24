@@ -10,6 +10,14 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    # 카테고리 페이지의 URL를 반환하는 함수
+    def get_absolute_url(self):
+        # 카테고리 페이지의 URL을 구성한다.
+        # 카테고리 페이지 URL은 '/blog/category/[카테고리의 slug 필드 값]/' 이다.
+        # 예) [문화 & 예술] 카테고리는 '/blog/category/문화-예술/'로 만들어진다.
+        # 키워드 f는 format의 약자로 변수와 문자열로 구성하여 하나의 문자열을 완성시킨다.
+        return f'/blog/category/{self.slug}/'
+
     class Meta:
         verbose_name_plural = 'Categories'
 

@@ -1,7 +1,13 @@
 {% extends 'blog/base.html' %}
 
 {% block main_area %}
-<h1>Blog</h1>
+<h1>Blog
+    <!-- 만약 views.py로부터 전달받은 category 변수가 존재한다면 (카테고리 페이지 접근 시) -->
+    {% if category %}
+    <!-- 카테고리 뱃지를 카테고리 페이지 제목 옆에 표시한다. -->
+    <span class="badge badge-secondary">{{ category }}</span>
+    {% endif %}
+</h1>
 {% if post_list.exists %}
 {% for p in post_list %}
 <!-- Blog post -->
