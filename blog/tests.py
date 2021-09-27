@@ -216,3 +216,30 @@ class TestView(TestCase):
         self.assertIn(self.post_001.title, main_area.text)
         self.assertNotIn(self.post_002.title, main_area.text)
         self.assertNotIn(self.post_003.title, main_area.text)
+
+    # 태그 페이지 테스트
+    def test_tag_page(self):
+        # hello 태그 페이지로 접속하여 정상동작하는지 확인
+        response = self.client.get(self.tag_hello.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # hello 태그 페이지의 내비게이션바 테스트
+        self.navbar_test(soup)
+        
+        # hello 태그 페이지의 카테고리 카드 테스트
+        self.category_card_test(soup)
+
+        # hello 태그 이름과 hello 태그 페이지의 타이틀이 일치하는지 확인
+        self.assertIn(self.tag_hello.name, soup.h1.text)
+
+        # hello 태그 페이지의 main-area를 찾는다.
+        main_area = soup.find('div', id='main-area')
+
+        # main-area 내부에는 hello 태그이름과 post_001 글의 타이틀만 존재해야 한다.
+        # post_002글과 post_003글의 제목은 main-area에 포함되면 안된다.
+        # (post_001 글만 hello 태그를 가지고 있기 때문)
+        self.assertIn(self.tag_hello.name, main_area.text)
+        self.assertIn(self.post_001.title, main_area.text)
+        self.assertNotIn(self.post_002.title, main_area.text)
+        self.assertNotIn(self.post_003.title, main_area.text)

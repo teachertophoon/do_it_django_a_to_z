@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 
-from blog.models import Post, Category
+from blog.models import Post, Category, Tag
 
 
 # CBV (Class Based View) 방식
@@ -96,5 +96,31 @@ def category_page(request, slug):
             'categories': Category.objects.all(),
             'no_category_post_count': Post.objects.filter(category=None).count(),
             'category': category,
+        }
+    )
+
+def tag_page(request, slug):
+    # URL 주소로 전달받은 slug 값을 이용하여 Tag 테이블을 검색한다.
+    # 예) slug 값이 hello일 경우는 Tag 테이블에서 slug가 hello인 태그를 찾고
+    # 찾은 태그를 객체화해서 tag 변수에 담는다.
+    tag = Tag.objects.get(slug=slug)
+
+    # tag 변수에 담긴 태그 객체를 가지는 Post들을 불러와서 post_list 변수에 담는다.
+    post_list = tag.post_set.all()
+
+    # 템플릿은 post_list.html을 사용
+    # 글 목록은 위에서 작성한 post_list 변수에 담겨 있고,
+    # 템플릿에 넘길 때 post_list 변수로 넘긴다.
+    # tag는 현재 화면에 보이는 태그페이지의 태그이름
+    # categories는 카테고리 카드에 사용하기 위한 변수
+    # no_category_post_count는 카테고리를 가지지 않은 포스트의 수
+    return render(
+        request,
+        'blog/post_list.html',
+        {
+            'post_list': post_list,
+            'tag': tag,
+            'categories': Category.objects.all(),
+            'no_category_post_count': Post.objects.filter(category=None).count()
         }
     )

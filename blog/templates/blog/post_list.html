@@ -7,6 +7,13 @@
     <!-- 카테고리 뱃지를 카테고리 페이지 제목 옆에 표시한다. -->
     <span class="badge badge-secondary">{{ category }}</span>
     {% endif %}
+
+    {% if tag %}
+    <!-- 태그 뱃지를 태그 페이지 제목 옆에 표시한다. -->
+    <span class="badge badge-light">
+        <i class="fas fa-tags"></i>{{ tag }} ({{ tag.post_set.count }})
+    </span>
+    {% endif %}
 </h1>
 {% if post_list.exists %}
 {% for p in post_list %}
