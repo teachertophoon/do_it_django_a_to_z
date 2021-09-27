@@ -3,6 +3,16 @@ import os
 from django.contrib.auth.models import User
 from django.db import models
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'/blog/tag/{self.slug}/'
+
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
@@ -34,6 +44,10 @@ class Post(models.Model):
     # SET_NULL: 작성자 정보가 User 테이블에서 삭제되면 작성했던 글은 유지(author는 null)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
+
+    # 태그 필드 추가: 다대다 관계는 ManyToManyField 사용
+    # (일대다 관계일 때 ForeignKey 사용하는 것과 비교해서 볼 것)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     # 관리자 페이지에서 작성한 Post의 제목 구성을 바꾸고 싶을 때
     def __str__(self):

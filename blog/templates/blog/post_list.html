@@ -35,6 +35,24 @@
         {% if p.hook_text %}
         <h5 class="text-muted">{{ p.hook_text }}</h5>
         {% endif %}
+
+        <!-- Tags -->
+        {% if p.tags.exists %} <!-- [필드명].exists는 값 존재 유무 확인용 -->
+        <i class="fas fa-tags"></i> <!-- fontawesome을 활용해 tag 아이콘 사용 -->
+
+        <!-- all 대신 iterator 사용 이유 -->
+        <!-- 결과를 재사용하지 않고, 메모리 문제를 일으킬만한 많은 양의 데이터를 사용할
+             경우는 all() 대신 iterator()를 사용해야 한다. -->
+        {% for tag in p.tags.iterator %}
+        <!-- 태그 하이퍼링크 생성. 클릭하면 태그 페이지로 이동한다 -->
+        <a href="{{ tag.get_absolute_url }}">
+            <span class="badge badge-pill badge-light">{{ tag }}</span>
+        </a>
+        {% endfor %}
+        <br/> <!-- 줄바꿈 -->
+        <br/> <!-- 줄바꿈 -->
+        {% endif %}
+
         <a class="btn btn-primary" href="{{ p.get_absolute_url }}">Read more</a>
     </div>
 </div>
