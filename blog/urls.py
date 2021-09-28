@@ -2,6 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # /blog/create_post/ 요청을 받으면
+    # CBV 방식으로 PostCreate 클래스의 as_view() 함수를 호출한다.
+    path('create_post/', views.PostCreate.as_view()),
+
     # 카테고리 페이지 url 처리를 위해 아래 코드를 작성
     # slug는 문자열 형태이므로 str 키워드를 사용 (아래 <int:pk>와 비교해보세요)
     # 두 번째 파라메터는 첫 번째 파라메터 형식의 URL을 입력했을 때 실행할 view를 지정

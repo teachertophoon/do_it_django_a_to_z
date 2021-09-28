@@ -1,5 +1,6 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 
 from blog.models import Post, Category, Tag
 
@@ -124,3 +125,13 @@ def tag_page(request, slug):
             'no_category_post_count': Post.objects.filter(category=None).count()
         }
     )
+
+# CreateView를 상속받아 Form 양식을 자동으로 생성할 수 있다.
+class PostCreate(LoginRequiredMixin, CreateView):
+    # 1. Post 테이블을 사용하기 위해 model 변수에 Post를 대입
+    model = Post
+
+    # Form 양식에서 클라이언트로부터 입력받을 정보(Post 테이블의 필드명)를
+    # fields 변수에 대입한다.
+    fields = ['title', 'hook_text', 'content', 'head_image',
+              'file_upload', 'category']

@@ -243,3 +243,26 @@ class TestView(TestCase):
         self.assertIn(self.post_001.title, main_area.text)
         self.assertNotIn(self.post_002.title, main_area.text)
         self.assertNotIn(self.post_003.title, main_area.text)
+
+    def test_create_post(self):
+        # 로그인하지 않으면 status_code가 200이면 안 된다!
+        response = self.client.get('/blog/create_post/')
+        self.assertNotEqual(response.status_code, 200)
+
+        # 로그인을 한다.
+        self.client.login(username='trump', password='somepassword')
+
+        # 1. (상민씨)
+        response = self.client.get('/blog/create_post/')
+        self.assertEqual(response.status_code, 200)
+
+        # 2. (기백씨)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # 3. (남곤씨)
+        self.assertEqual('Create Post - Blog', soup.title.text)
+
+        # 4. (동빈씨)
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('Create New Post', main_area.text)
+
