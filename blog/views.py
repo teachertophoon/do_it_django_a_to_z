@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView
 
 from blog.models import Post, Category, Tag
@@ -7,6 +7,7 @@ from blog.models import Post, Category, Tag
 
 # CBV (Class Based View) 방식
 class PostList(ListView):
+    template_name = 'blog/test_abc.html'
     model = Post
     ordering = '-pk'
     # template 명은 post_list.html (모델명_list.html)
@@ -135,3 +136,27 @@ class PostCreate(LoginRequiredMixin, CreateView):
     # fields 변수에 대입한다.
     fields = ['title', 'hook_text', 'content', 'head_image',
               'file_upload', 'category']
+
+    # form_valid() 함수는 CreateView 클래스에 정의된 form_valid() 함수를 재정의
+    # form_valid() 함수의 역할은 필수 입력 값과 제약사항이 지켜졌는지 확인하는 함수
+    # 이상이 없다면 클라이언트는 정상적인 결과 페이지를 받게 되고,
+    # 이상이 있다면 장고가 작성해준 form 영역에 이상여부를 표시해준다.
+    def form_valid(self, form):
+        # self.request는 클라이언트가 서버로 요청한 정보를 담고있는 객체
+        # self.request.user는 현재 로그인한 사용자의 정보를 담고있는 User 객체
+        current_user = self.request.user
+
+        # is_authenticated: 현재 사용자가 로그인한 상태이면 True, 아니면 False
+        if current_user.is_authenticated:
+            # form.instance는 클라이언트에서 form을 통해 입력한 내용을 담고있다.
+            # 현재 사용자 정보를 author 필드에 채워 넣어준다. (테스트코드 오류 해결)
+            form.instance.author = current_user
+            # 우리가 원하는 부분 처리가 끝나고 최종적으로 PostCreate 클래스의 부모인
+            # CreateView 클래스의 form_valid() 함수를 실행한다.
+            # 실행할 때 author 필드가 채워진 form 객체를 전달받아
+            # 기존에 CreateView가 했던 데이터베이스에 글 등록하는 기능을 수행하게 된다.
+            return super(PostCreate, self).form_valid(form)
+        else:
+            # 현재 사용자가 로그아웃 상태일 경우는 목록 페이지로 이동한다.
+            # 이동하고자 하는 URL 주소를 redirect() 함수의 파라메터로 넘겨주면 된다.
+            return redirect('/blog/')

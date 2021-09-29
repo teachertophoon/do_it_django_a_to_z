@@ -266,3 +266,24 @@ class TestView(TestCase):
         main_area = soup.find('div', id='main-area')
         self.assertIn('Create New Post', main_area.text)
 
+        # 5. POST 방식으로 포스트 글 내용을 작성하고
+        # 글 작성 요청을 위한 주소를 기입한다.
+        # 첫 번째 파라메터: 클라이언트로부터 요청받을 서버주소
+        # 두 번째 파라메터: 서버로 전송할 필드명과 값을 딕셔너리 형태로 작성
+        self.client.post(
+            '/blog/create_post/',
+            {
+                'title': 'Post Form 만들기',
+                'content': 'Post Form 페이지를 만듭시다.'
+            }
+        )
+        # 6. last() 함수는 포스트 글 중 제일 최근에 작성한
+        # 포스트 글 하나를 가져온다.
+        last_post = Post.objects.last()
+
+        # 7. 제일 최근에 작성한 글의 제목과 작성자명을 비교한다.
+        # 제일 최근에 작성한 글 제목은 5번 주석에 입력했던 title 이고,
+        # 작성자명은 현재 로그인된 trump 이다.
+        self.assertEqual(last_post.title, 'Post Form 만들기')
+        self.assertEqual(last_post.author.username, 'trump')
+
