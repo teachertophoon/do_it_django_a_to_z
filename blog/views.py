@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView
 
@@ -128,7 +128,7 @@ def tag_page(request, slug):
     )
 
 # CreateView를 상속받아 Form 양식을 자동으로 생성할 수 있다.
-class PostCreate(LoginRequiredMixin, CreateView):
+class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     # 1. Post 테이블을 사용하기 위해 model 변수에 Post를 대입
     model = Post
 
@@ -136,6 +136,12 @@ class PostCreate(LoginRequiredMixin, CreateView):
     # fields 변수에 대입한다.
     fields = ['title', 'hook_text', 'content', 'head_image',
               'file_upload', 'category']
+
+    # UserPassesTestMixin 클래스의 test_func() 함수 재정의
+    # test_func() 함수가 True를 리턴하도록 만들면 포스트 작성 페이지 접속이 가능하다.
+    # 아래는 최고관리자 권한 혹은 스테프 권한을 가졌다면 포스트 작성페이지 접속이 가능한 것이다.
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.is_staff
 
     # form_valid() 함수는 CreateView 클래스에 정의된 form_valid() 함수를 재정의
     # form_valid() 함수의 역할은 필수 입력 값과 제약사항이 지켜졌는지 확인하는 함수
@@ -147,7 +153,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
         current_user = self.request.user
 
         # is_authenticated: 현재 사용자가 로그인한 상태이면 True, 아니면 False
-        if current_user.is_authenticated:
+        if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
             # form.instance는 클라이언트에서 form을 통해 입력한 내용을 담고있다.
             # 현재 사용자 정보를 author 필드에 채워 넣어준다. (테스트코드 오류 해결)
             form.instance.author = current_user

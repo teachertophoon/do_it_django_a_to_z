@@ -12,6 +12,12 @@ class TestView(TestCase):
             User.objects.create_user(username='trump', password='somepassword')
         self.user_obama =\
             User.objects.create_user(username='obama', password='somepassword')
+        # User 객체에 존재하는 is_staff 변수는 스테프인지 아닌지 판단하는 변수이다.
+        # 아래는 user_obama User 객체의 is_staff 변수를 True로 바꾸어
+        # 오바마 사용자를 스테프 권한을 주도록 바꾼 것이다.
+        # 설정이 끝나면 마지막에 User 객체의 save() 함수를 꼭! 실행해야 한다.
+        self.user_obama.is_staff = True
+        self.user_obama.save()
 
         self.category_programming = Category.objects\
             .create(name='programming', slug='programming')
@@ -249,8 +255,13 @@ class TestView(TestCase):
         response = self.client.get('/blog/create_post/')
         self.assertNotEqual(response.status_code, 200)
 
-        # 로그인을 한다.
+        # staff가 아닌 trump가 로그인을 한다.
         self.client.login(username='trump', password='somepassword')
+        response = self.client.get('/blog/create_post/')
+        self.assertNotEqual(response.status_code, 200)
+
+        # staff인 obama로 로그인한다.
+        self.client.login(username='obama', password='somepassword')
 
         # 1. (상민씨)
         response = self.client.get('/blog/create_post/')
@@ -283,7 +294,7 @@ class TestView(TestCase):
 
         # 7. 제일 최근에 작성한 글의 제목과 작성자명을 비교한다.
         # 제일 최근에 작성한 글 제목은 5번 주석에 입력했던 title 이고,
-        # 작성자명은 현재 로그인된 trump 이다.
+        # 작성자명은 현재 로그인된 obama 이다.
         self.assertEqual(last_post.title, 'Post Form 만들기')
-        self.assertEqual(last_post.author.username, 'trump')
+        self.assertEqual(last_post.author.username, 'obama')
 

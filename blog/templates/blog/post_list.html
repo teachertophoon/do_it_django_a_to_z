@@ -1,6 +1,19 @@
 {% extends 'blog/base.html' %}
 
 {% block main_area %}
+
+{% if user.is_authenticated %} <!-- 로그인한 사용자이고 -->
+    <!-- 최고관리자 혹은 스테프인 사용자일 경우에만 포스트 작성 버튼이 화면에 표시된다. -->
+    {% if user.is_superuser or user.is_staff %}
+        <a class="btn btn-info btn-sm float-right"
+           href="/blog/create_post/"
+           role="button">
+            <i class="fas fa-pen"></i>
+            &nbsp;&nbsp;New Post
+        </a>
+    {% endif %}
+{% endif %}
+
 <h1>Blog
     <!-- 만약 views.py로부터 전달받은 category 변수가 존재한다면 (카테고리 페이지 접근 시) -->
     {% if category %}

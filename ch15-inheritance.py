@@ -23,5 +23,31 @@ class Apple(Origin, Food):
         print(f'사과: {self.name}, {self.quantity}, {self.taste}')
         super(Apple, self).introduce()
 
-food = Apple()
-food.introduce()
+#food = Apple()
+#food.introduce()
+
+
+class ClassA():
+    temp1 = 'hello'
+    temp2 = 'hi'
+
+    def __init__(self):
+        print('ClassA 생성')
+
+    def go(self):
+        print(self.temp1 + ' ' + self.temp2)
+
+class ClassB():
+    obj1 = ''
+
+    def __init__(self):
+        print('ClassB 생성')
+
+    def test(self, obj):
+        print('test 실행')
+        self.obj1 = obj
+
+classB = ClassB()
+classB.__init__()
+classB.test(ClassA())
+classB.obj1.go()
