@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('update_post/<int:pk>/', views.PostUpdate.as_view()),
+
     # /blog/create_post/ 요청을 받으면
     # CBV 방식으로 PostCreate 클래스의 as_view() 함수를 호출한다.
     path('create_post/', views.PostCreate.as_view()),

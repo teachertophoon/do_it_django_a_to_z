@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from blog.models import Post, Category, Tag
 
@@ -166,3 +167,32 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             # 현재 사용자가 로그아웃 상태일 경우는 목록 페이지로 이동한다.
             # 이동하고자 하는 URL 주소를 redirect() 함수의 파라메터로 넘겨주면 된다.
             return redirect('/blog/')
+
+# 포스트 수정 페이지를 위한 클래스 CBV 방식
+# 로그인한 사용자만 접근할 수 있도록 LoginRequiredMixin 클래스를 상속받는다.
+# 장고에서 제공하는 UpdateView를 상속받으면 수정페이지에서 수정할 정보를 입력받는
+# 영역을 장고가 자동으로 작성해준다.
+class PostUpdate(LoginRequiredMixin, UpdateView):
+    # 수정 대상 모델을 지정
+    model = Post
+    # 수정 대상 필드명을 지정
+    # 장고는 model, fields 내용을 가지고 클라이언트의 form을 구성하게 된다.
+    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload',
+            'category', 'tags']
+
+    # 수정페이지의 템플릿명을 지정
+    template_name = 'blog/post_update_form.html'
+
+    # UpdateView에 정의되어 있는 dispatch() 함수를 재정의한다.
+    # 원래는 if문의 return 키워드 옆에 있는 코드와 같이
+    # UpdateView의 dispatch() 함수를 실행하여 기본동작을 수행하지만
+    # 기본동작을 중간에 가로채서 if문을 이용해 분기점을 만들어준다.
+    # 1. 사용자가 로그인한 상태이고 현재 사용자가 현재글의 작성자와 동일할 경우는
+    # UpdateView의 dispatch() 함수를 그대로 실행하게 하여 페이지에 정상 접속하게 하고,
+    # 2. 그렇지 않다면 else문이 실행되는데, raise라는 키워드를 사용하여
+    # 예외를 발생시킨다. (PermissionDenied는 상태코드 403을 만들어 서버가 응답하게 된다.)
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and request.user == self.get_object().author:
+            return super(PostUpdate, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied

@@ -298,3 +298,71 @@ class TestView(TestCase):
         self.assertEqual(last_post.title, 'Post Form 만들기')
         self.assertEqual(last_post.author.username, 'obama')
 
+    # 포스트 수정 페이지 테스트
+    def test_update_post(self):
+        # setUp() 함수에서 작성한 세 번째 포스트 글을 수정하기 위해
+        # 주소를 작성하고 작성한 주소를 update_post_url 변수에 담는다.
+        update_post_url = f'/blog/update_post/{self.post_003.pk}/'
+
+        # 로그인하지 않은 경우
+        # 로그인하지 않은 경우는 포스트 수정페이지에 진입할 수 없다.
+        response = self.client.get(update_post_url)
+        self.assertNotEqual(response.status_code, 200)
+
+        # 로그인은 했지만 작성자가 아닌 경우
+        # 세 번째 글을 작성한 트럼프만 글을 수정할 수 있다.
+        # 포스트 수정페이지는 특정 글의 작성자만 수정할 수 있는 권한을 가진다.
+        self.assertNotEqual(self.post_003.author, self.user_trump)
+        self.client.login(
+            username=self.user_trump.username,
+            password='somepassword'
+        )
+        response = self.client.get(update_post_url)
+
+        # 서버에서 작성자를 비교하고 작성자가 다르다면 403 응답을
+        # 클라이언트로 보내게 된다.
+        self.assertEqual(response.status_code, 403)
+
+        # 작성자(obama)가 접근하는 경우
+        # 세 번째 글을 오바마가 작성했으므로 수정페이지에 접근이 가능하다.
+        self.client.login(
+            username=self.post_003.author.username,
+            password='somepassword'
+        )
+        response = self.client.get(update_post_url)
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # 포스트 수정페이지의 title은 'Edit Post - Blog' 이어야 한다.
+        self.assertEqual('Edit Post - Blog', soup.title.text)
+
+        # main-area 영역에는 'Edit Post'라는 제목이 보여야 한다.
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('Edit Post', main_area.text)
+
+        # 글을 수정하기 위해 POST 방식으로 수정 내용을 서버로 전달한다.
+        # POST update_post_url 에 대한 처리는 장고가 자동으로 처리해준다.
+        # 두 번째 파라메터는 수정할 내용을 필드명과 수정내용 작성하여 딕셔너리
+        # 형태로 만든다.
+        # 세 번째 파라메터 follow=True는 글 수정 이후
+        # 테스트 코드에서 우리가 페이지 이동하는 코드를 작성하지 않더라도
+        # 수정페이지 이후 이동하는 페이지로 자동으로 이동하게 된다.
+        response = self.client.post(
+            update_post_url,
+            {
+                'title': '세 번째 포스트를 수정했습니다.',
+                'content': '안녕 세계? 우리는 하나!',
+                'category': self.category_music.pk
+            },
+            follow=True
+        )
+
+        # 수정페이지 이후 이동된 페이지 내용을 다시 읽어드린 후
+        # 해당 글의 제목과 내용이 수정됐는지를 포스트 목록 페이지에서
+        # 확인을 한다.
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('세 번째 포스트를 수정했습니다.', main_area.text)
+        self.assertIn('안녕 세계? 우리는 하나!', main_area.text)
+        self.assertIn(self.category_music.name, main_area.text)
+

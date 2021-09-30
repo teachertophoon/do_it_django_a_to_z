@@ -34,6 +34,18 @@
                             Posted on {{ post.created_at }} by
                             <a href="#">{{ post.author | upper }}</a>
                         </div>
+                        <!-- 로그인하고 로그인한 사용자와 글 작성자 일치여부 확인 -->
+                        <!-- 일치하면 버튼이 화면에 표시되고, 그렇지 않으면 보이지 않는다. -->
+                        {% if user.is_authenticated and user == post.author %}
+                        <!-- float-right 클래스 속성을 적용하여 버튼이 우측정렬 -->
+                        <!-- 현재 글의 pk 번호를 가져와서 수정페이지 주소를 완성시킨다. -->
+                        <a class="btn btn-info btn-sm float-right"
+                           href="/blog/update_post/{{ post.pk }}/"
+                           role="button">
+                            <i class="fas fa-pen"></i>
+                            Edit Post
+                        </a>
+                        {% endif %}
                     </header>
                     <!-- Preview image figure-->
                     <figure class="mb-4">
