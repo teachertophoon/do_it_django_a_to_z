@@ -277,6 +277,10 @@ class TestView(TestCase):
         main_area = soup.find('div', id='main-area')
         self.assertIn('Create New Post', main_area.text)
 
+        # 템플릿에서 id가 id_tags_str를 가지는 input 태그가 존재하는지 확인
+        tag_str_input = main_area.find('input', id='id_tags_str')
+        self.assertTrue(tag_str_input)
+
         # 5. POST 방식으로 포스트 글 내용을 작성하고
         # 글 작성 요청을 위한 주소를 기입한다.
         # 첫 번째 파라메터: 클라이언트로부터 요청받을 서버주소
@@ -285,7 +289,8 @@ class TestView(TestCase):
             '/blog/create_post/',
             {
                 'title': 'Post Form 만들기',
-                'content': 'Post Form 페이지를 만듭시다.'
+                'content': 'Post Form 페이지를 만듭시다.',
+                'tags_str': 'new tag; 한글 태그, python'
             }
         )
         # 6. last() 함수는 포스트 글 중 제일 최근에 작성한
@@ -297,6 +302,17 @@ class TestView(TestCase):
         # 작성자명은 현재 로그인된 obama 이다.
         self.assertEqual(last_post.title, 'Post Form 만들기')
         self.assertEqual(last_post.author.username, 'obama')
+
+        # 5번에서 작성했던 태그 3개가 정상적으로 입력 되었는지 확인
+        # 수정한 태그의 개수 총 3개인지 확인 
+        self.assertEqual(last_post.tags.count(), 3)
+        
+        # 입력한 태그 중 'new tag'와 '한글 태그'가 존재하는지 확인
+        self.assertTrue(Tag.objects.get(name='new tag'))
+        self.assertTrue(Tag.objects.get(name='한글 태그'))
+        
+        # 현재 데이터베이스에 저장된 태그의 총 개수가 5개인지 확인
+        self.assertEqual(Tag.objects.count(), 5)
 
     # 포스트 수정 페이지 테스트
     def test_update_post(self):

@@ -30,6 +30,18 @@
         {% csrf_token %}
         <table>
             {{ form }}
+            <tr>
+                <th><label for="id_tags_str">Tags:</label></th>
+                <td>
+                    <!-- input 태그 -->
+                    <!-- type: 입력받을 자료의 타입을 설정. 여기서는 텍스트를 입력 -->
+                    <!-- name: input 태그에서 입력받은 정보를 저장할 변수명 작성 -->
+                    <!-- id: 현재 html 문서에서 유일한 값을 명명하여
+                            해당 태그를 찾기 쉽도록 만들어준다.
+                    -->
+                    <input type="text" name="tags_str" id="id_tags_str">
+                </td>
+            </tr>
         </table>
         <button type="submit" class="btn btn-primary float-right">
             Submit

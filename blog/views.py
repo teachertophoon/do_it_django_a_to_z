@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
+from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from blog.models import Post, Category, Tag
@@ -158,11 +159,83 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             # form.instance는 클라이언트에서 form을 통해 입력한 내용을 담고있다.
             # 현재 사용자 정보를 author 필드에 채워 넣어준다. (테스트코드 오류 해결)
             form.instance.author = current_user
-            # 우리가 원하는 부분 처리가 끝나고 최종적으로 PostCreate 클래스의 부모인
-            # CreateView 클래스의 form_valid() 함수를 실행한다.
-            # 실행할 때 author 필드가 채워진 form 객체를 전달받아
-            # 기존에 CreateView가 했던 데이터베이스에 글 등록하는 기능을 수행하게 된다.
-            return super(PostCreate, self).form_valid(form)
+
+            # 먼저 부모 클래스의 form_valid() 함수를 이용하여, 필수값이 잘 입력되었는지 확인
+            # form_valid()는 추후 클라이언트로 보낼 response(응답) 내용을 리턴한다.
+            response = super(PostCreate, self).form_valid(form)
+
+            # 클라이언트로부터 전달받은 request 객체 내부에서
+            # POST 방식으로 전달 받았다면 self.request.POST에는 Payload 정보가 존재하는데
+            # Payload 정보 중 우리가 추가했던 tags_str 정보를 가져오기 위해 get 함수 사용
+            # get 함수가 리턴되는 내용은 클라이언트에서 입력했던 태그 텍스트인데
+            # 이를 tags_str 변수에 담은 것이다.
+            tags_str = self.request.POST.get('tags_str')
+
+            # tags_str 변수가 객체를 가지고 있다는 뜻은
+            # POST 요청을 받았다는 뜻이고, POST 요청일 때만 데이터베이스에
+            # 태그를 저장하기 위해서 아래와 같이 if문을 사용하여 분기하였다.
+            # (if문을 만족하지 않았다는 뜻은 GET 요청을 받았다는 뜻이다.)
+            if tags_str:
+                # strip: 벗겨내다는 뜻
+                # tags_str 변수에는 문자열이 존재하는데
+                # 문자열 좌우에 여백이 존재하면 그 여백을 없앤다는(벗겨낸다)는 뜻이다.
+                # 여백을 벗겨낸 결과를 다시 tags_str 변수에 담는다.
+                # 예) ' new tag; 한글 태그, python   ' -> 'new tag; 한글 태그, python'
+                tags_str = tags_str.strip()
+
+                # tags_str 변수에 담긴 내용 중 콤마(,)를 세미콜론(;)으로 대체한다.
+                # 대체한 결과를 다시 tags_str 변수에 담는다.
+                # 예) 'new tag; 한글 태그, python' -> 'new tag; 한글 태그; python'
+                tags_str = tags_str.replace(',', ';')
+
+                # tags_str 변수에 담긴 내용을 세미콜론(;) 기준으로 쪼개서(split)
+                # tags_list 변수에 담는다. 이때 담기는 형태는 배열 형태이다.
+                # 예) 'new tag; 한글 태그; python' -> ['new tag',' 한글 태그',' python']
+                tags_list = tags_str.split(';')
+
+                # tags_list에 담긴 배열의 항목 하나하나를 for문을 이용해 처리한다.
+                for t in tags_list:
+                    # tags_list에 담긴 하나의 문자열을 꺼내어 t 변수에 저장된 상태
+                    # t.strip()을 하게되면 t 변수에 저장된 내용의 좌우여백의 공백을
+                    # 벗겨낸다. 벗겨낸 결과를 t 변수에 담는다.
+                    t = t.strip()
+
+                    # get_or_create() 함수는 리턴되는 값이 2개이다.
+                    # 1. name 속성에 대입한 t(문자열)가 Tag 테이블의 name속성에 존재한다면
+                    # get() 함수와 같이 동작을 하게되고,
+                    # tag 변수에 t 문자열로 name 필드를 이용하여 검색했던 Tag 객체가 저장되고,
+                    # is_tag_created 변수에는 False 값이 저장된다.
+                    # 2. create() 함수와 같이 동작을 하면
+                    # tag 변수에는 새롭게 생성된 Tag 객체가 저장이 되고,
+                    # is_tag_created 변수에는 True 값이 저장된다.
+                    tag, is_tag_created = Tag.objects.get_or_create(name=t)
+
+                    # 만약 Tag 테이블에 새로운 태그가 저장되었다면
+                    if is_tag_created:
+                        # slugify() 함수를 통해 slug 값을 생성하고
+                        # 생성한 slug 값을 tag 객체에 담는다.
+                        # t는 태그의 이름값(문자열)인데 만약 'new tag'일 경우
+                        # 'new tag'를 'new-tag'로 변환시켜준다.
+                        # allow_unicode=True는 유니코드 값을 허용한다는 뜻인데,
+                        # 한글은 unicode로 구성되어 있어 한글을 지원하겠다는 뜻이다.
+                        # 예) '한글 태그' -> '한글-태그'
+                        tag.slug = slugify(t, allow_unicode=True)
+
+                        # 최종 완성된 태그를 실제 데이터베이스에 반영(update) 한다.
+                        tag.save()
+
+                    # self.object는 현재 작성하고 있는 Post 객체인데
+                    # Post 객체의 tags 필드에 추가된다.
+                    # 예)
+                    # for문 첫번째 바퀴: ['new tag']
+                    # for문 두번째 바퀴: ['new tag', '한글 태그']
+                    # for문 세번째 바퀴: ['new tag', '한글 태그', 'python']
+                    self.object.tags.add(tag)
+
+            # 모든 처리가 끝나고 위에서 선언했던 response를 리턴한다.
+            # PostCreate 클래스의 부모클래스의 CreateView의 form_valid() 결과
+            return response
+
         else:
             # 현재 사용자가 로그아웃 상태일 경우는 목록 페이지로 이동한다.
             # 이동하고자 하는 URL 주소를 redirect() 함수의 파라메터로 넘겨주면 된다.
@@ -178,7 +251,7 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
     # 수정 대상 필드명을 지정
     # 장고는 model, fields 내용을 가지고 클라이언트의 form을 구성하게 된다.
     fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload',
-            'category', 'tags']
+            'category']
 
     # 수정페이지의 템플릿명을 지정
     template_name = 'blog/post_update_form.html'
