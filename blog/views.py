@@ -250,8 +250,8 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
     # 수정 대상 필드명을 지정
     # 장고는 model, fields 내용을 가지고 클라이언트의 form을 구성하게 된다.
-    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload',
-            'category']
+    fields = ['title', 'hook_text', 'content', 'head_image',
+              'file_upload', 'category']
 
     # 수정페이지의 템플릿명을 지정
     template_name = 'blog/post_update_form.html'
@@ -299,13 +299,12 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
             # 추가한다.
             # 예) '파이썬; 장고'
             context['tags_str_default'] = '; '.join(tags_str_list)
-
         return context
 
     # 클라이언트의 form 양식에 작성한 내용을 전달 받은 후
     # 작성한 내용 중 필수 값을 입력했는지 이상 유무를 점검하는 form_vaild() 함수
     # form 파라메터에는 클라이언트로부터 전달받은 내용이 저장되어 있다.
-    def form_vaild(self, form):
+    def form_valid(self, form):
         # 우선 PostUpdate 클래스의 부모클래스의 form_valid() 함수를 호출하여
         # tags 필드를 제외한 나머지 필드들을 먼저 점검한다.
         # 점검 후 다시 response 변수에 결과를 담는다.
