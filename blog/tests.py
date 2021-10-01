@@ -356,6 +356,19 @@ class TestView(TestCase):
         main_area = soup.find('div', id='main-area')
         self.assertIn('Edit Post', main_area.text)
 
+        # 수정페이지에서 데이터베이스로부터 불러온 태그를 출력하는 input 태그를 찾아
+        # input 태그 객체를 tag_str_input 변수에 담는다.
+        tag_str_input = main_area.find('input', id='id_tags_str')
+
+        # tag_str_input 변수가 존재하는지 확인 (변수값이 null이 아니면 True)
+        self.assertTrue(tag_str_input)
+
+        # 불러온 글의 태그인 '파이썬 공부'와 'python'이 정상적으로
+        # 태그 input 박스에 불러와졌는지 확인한다.
+        # input 태그의 value 속성은 현재 입력된 값을 나타낸다.
+        # <input id='id_tags_str' value='파이썬 공부; python' type='text'>
+        self.assertIn('파이썬 공부; python', tag_str_input.attrs['value'])
+
         # 글을 수정하기 위해 POST 방식으로 수정 내용을 서버로 전달한다.
         # POST update_post_url 에 대한 처리는 장고가 자동으로 처리해준다.
         # 두 번째 파라메터는 수정할 내용을 필드명과 수정내용 작성하여 딕셔너리
@@ -368,17 +381,24 @@ class TestView(TestCase):
             {
                 'title': '세 번째 포스트를 수정했습니다.',
                 'content': '안녕 세계? 우리는 하나!',
-                'category': self.category_music.pk
+                'category': self.category_music.pk,
+                'tags_str': '파이썬 공부; 한글 태그, some tag'
             },
             follow=True
         )
 
         # 수정페이지 이후 이동된 페이지 내용을 다시 읽어드린 후
-        # 해당 글의 제목과 내용이 수정됐는지를 포스트 목록 페이지에서
+        # 해당 글의 제목과 내용이 수정됐는지를 포스트 상세페이지에서
         # 확인을 한다.
         soup = BeautifulSoup(response.content, 'html.parser')
         main_area = soup.find('div', id='main-area')
         self.assertIn('세 번째 포스트를 수정했습니다.', main_area.text)
         self.assertIn('안녕 세계? 우리는 하나!', main_area.text)
         self.assertIn(self.category_music.name, main_area.text)
+
+        # 수정이 끝난 후 포스트 상세 페이지에서 변경한 태그가 제대로 적용되었는지 확인
+        self.assertIn('파이썬 공부', main_area.text)
+        self.assertIn('한글 태그', main_area.text)
+        self.assertIn('some tag', main_area.text)
+        self.assertNotIn('python', main_area.text)
 

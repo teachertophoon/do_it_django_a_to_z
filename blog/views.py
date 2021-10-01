@@ -269,3 +269,90 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
             return super(PostUpdate, self).dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
+
+    def get_context_data(self, **kwargs):
+        # PostUpdate 클래스의 부모클래스의 get_context_data() 함수를 먼저 호출한다.
+        # 먼저 호출하게 되면 현재 Post 테이블의 내용을 가져와서 context 변수에 담는다.
+        context = super(PostUpdate, self).get_context_data()
+        
+        # self.object는 현재 수정하고자 하는 Post 글의 객체이다.
+        # self.object.tags는 현재 수정하고자 하는 글의 tag들이 저장된 객체이고
+        # self.object.tags.exists()는 tags 필드에 값이 존재하는지(tag가 저장되었는지)
+        # 확인하는 함수이다. 존재한다면 True, 그렇지 않으면 False 리턴
+
+        # 만약 태그가 존재하는 Post 글일 경우
+        if self.object.tags.exists():
+            # 빈 리스트를 생성하여 tags_str_list 변수에 담는다. []
+            tags_str_list = list()
+
+            # 현재 수정글의 tag 개수만큼 for문을 반복한다.
+            # 왜나하면 self.object.tags.all() 함수를 호출하여
+            # 현재 수정글의 태그 객체 전부를 가져왔기 때문이다.
+            for t in self.object.tags.all():
+                # tags_str_list 리스트 변수에 태그의 name(문자열)을 추가한다.
+                # 예) ['파이썬', '장고']
+                tags_str_list.append(t.name)
+
+            # tags_str_list 변수에 담긴 리스트를 가지고 분리자 세미콜론(;)을 사용하여
+            # 새로운 문자열을 생성하는 join() 함수를 사용하여 태그 문자열을 만들고,
+            # 만든 문자열을 템플릿으로 전달하기 위해서 context에 tags_str_default를
+            # 추가한다.
+            # 예) '파이썬; 장고'
+            context['tags_str_default'] = '; '.join(tags_str_list)
+
+        return context
+
+    # 클라이언트의 form 양식에 작성한 내용을 전달 받은 후
+    # 작성한 내용 중 필수 값을 입력했는지 이상 유무를 점검하는 form_vaild() 함수
+    # form 파라메터에는 클라이언트로부터 전달받은 내용이 저장되어 있다.
+    def form_vaild(self, form):
+        # 우선 PostUpdate 클래스의 부모클래스의 form_valid() 함수를 호출하여
+        # tags 필드를 제외한 나머지 필드들을 먼저 점검한다.
+        # 점검 후 다시 response 변수에 결과를 담는다.
+        response = super(PostUpdate, self).form_valid(form)
+
+        # 현재 Post 글의 tags 필드에 저장된 태그들을 모두 삭제한다.
+        # 왜냐하면 태그 하나하나 비교해서 추가/삭제하여 수정하는 것 보단
+        # 내용을 모두 비운 뒤, 클라이언트로부터 전달받은 tags_str 내용을
+        # 다시 넣어주는 것이 더 간단한 로직(Logic)이기 때문이다.
+        self.object.tags.clear()
+
+        # 클라이언트의 POST 요청내용(self.request.POST) 중
+        # tags_str 변수에 담긴 내용을 tags_str 변수에 담는다.
+        # 예) '파이썬; 장고, 자바'
+        tags_str = self.request.POST.get('tags_str')
+
+        # 클라이언트가 POST 요청을 했고, tags_str 변수값이 존재한다면
+        # 아래 if문을 수행하게 된다.
+        if tags_str:
+            # tags_str 변수의 문자열 좌우여백을 제거
+            tags_str = tags_str.strip()
+            # tags_str 변수의 문자열 중 콤마(,)를 세미콜론(;)으로 변경
+            # 예) '파이썬; 장고; 자바'
+            tags_str = tags_str.replace(',', ';')
+            # 문자열을 세미콜론(;) 기준으로 나누어 리스트 형태로 만든 뒤
+            # tags_list 변수에 담는다.
+            # ['파이썬', ' 장고', ' 자바']
+            tags_list = tags_str.split(';')
+
+            # tags_list 리스트를 순회하면서 for문을 수행한다.
+            for t in tags_list:
+                # 리스트 내부의 문자열 좌우여백을 제거
+                t = t.strip()
+                # 태그 문자열을 이용하여 name 필드로 검색한다.
+                # 존재하는 태그이면 is_tag_created는 False가 저장되고,
+                # 존재하지 않는 태그이면 is_tag_created는 True가 된다.
+                tag, is_tag_created = Tag.objects.get_or_create(name=t)
+
+                # Tag 테이블에 태그가 새롭게 추가되었다면
+                if is_tag_created:
+                    # 태그 문자열을 slugify() 함수를 이용하여 slug 형태로 바꾸어
+                    # tag의 slug 필드에 저장한다.
+                    tag.slug = slugify(t, allow_unicode=True)
+                    # 완성된 tag 객체를 데이터베이스의 Tag 테이블에 저장한다.
+                    tag.save()
+
+                # 현재 Post 글의 tags 필드에 완성된 tag 객체를 추가한다.
+                self.object.tags.add(tag)
+
+        return response
