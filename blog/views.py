@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import render, redirect
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from blog.models import Post, Category, Tag
+from django import forms
 
 
 # CBV (Class Based View) 방식
@@ -200,6 +201,12 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
                     # 벗겨낸다. 벗겨낸 결과를 t 변수에 담는다.
                     t = t.strip()
 
+                    slug = slugify(t, allow_unicode=True)
+                    if len(slug):
+                        pass
+                    else:
+                        return redirect('/blog/create_post/?error=true')
+
                     # get_or_create() 함수는 리턴되는 값이 2개이다.
                     # 1. name 속성에 대입한 t(문자열)가 Tag 테이블의 name속성에 존재한다면
                     # get() 함수와 같이 동작을 하게되고,
@@ -338,6 +345,13 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
             for t in tags_list:
                 # 리스트 내부의 문자열 좌우여백을 제거
                 t = t.strip()
+
+                slug = slugify(t, allow_unicode=True)
+                if len(slug):
+                    pass
+                else:
+                    return redirect('/blog/update_post/?error=true')
+
                 # 태그 문자열을 이용하여 name 필드로 검색한다.
                 # 존재하는 태그이면 is_tag_created는 False가 저장되고,
                 # 존재하지 않는 태그이면 is_tag_created는 True가 된다.

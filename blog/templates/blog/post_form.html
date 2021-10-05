@@ -4,47 +4,46 @@
 -->
 {% extends 'blog/base_full_width.html' %}
 
+{% load crispy_forms_tags %}
+
 <!-- base.html의 head_title 블럭을 찾아서 'Create Post - Blog'로 변경
 -->
 {% block head_title %}Create Post - Blog{% endblock %}
 
 <!-- base.html의 main_area 블럭을 찾아 아래 html 태그들로 변경 -->
 {% block main_area %}
-    <h1>Create New Post</h1>
-    <hr/>
+<h1>Create New Post</h1>
+<hr/>
+<!--
+1. form 태그의 속성들
+method: 서버로 form 양식에 작성한 내용을 전달하는 방법 (GET / POST)
+enctype: 서버로 전송되는 데이터가 인코딩되는 방법을 명시
+예) application/x-www-form-urlencoded: 기본값, 모든 문자 인코딩
+multipart/form-data: 모든 문자를 인코딩 하지 않음, 파일 전송 시 사용
+text/plain: 공백문자는 '+' 기호로 변환하고, 나머지 문자는 모두 인코딩하지 않음
+action (장고에서는 생략): 데이터의 종착지 주소를 작성 (보통은 서버의 특정 주소)
+-->
+<form method="post" enctype="multipart/form-data">
     <!--
-    1. form 태그의 속성들
-    method: 서버로 form 양식에 작성한 내용을 전달하는 방법 (GET / POST)
-    enctype: 서버로 전송되는 데이터가 인코딩되는 방법을 명시
-    예) application/x-www-form-urlencoded: 기본값, 모든 문자 인코딩
-    multipart/form-data: 모든 문자를 인코딩 하지 않음, 파일 전송 시 사용
-    text/plain: 공백문자는 '+' 기호로 변환하고, 나머지 문자는 모두 인코딩하지 않음
-    action (장고에서는 생략): 데이터의 종착지 주소를 작성 (보통은 서버의 특정 주소)
+    2. CSRF (Cross-Site Request Forgery): 사이트 간 요청 위조
+    웹사이트 취약점 공격의 하나로, 사용자가 자신의 의지와는 무관하게
+    공격자가 의도한 행위를 특정 웹사이트에 요청하게 하는 공격을 말한다. <위키백과>
     -->
-    <form method="post" enctype="multipart/form-data">
-        <!--
-        2. CSRF (Cross-Site Request Forgery): 사이트 간 요청 위조
-        웹사이트 취약점 공격의 하나로, 사용자가 자신의 의지와는 무관하게
-        공격자가 의도한 행위를 특정 웹사이트에 요청하게 하는 공격을 말한다. <위키백과>
+    {% csrf_token %}
+    {{ form | crispy }}
+    <div id="div_id_tags_str">
+        <label for="id_tags_str">Tags:</label>
+        <!-- input 태그 -->
+        <!-- type: 입력받을 자료의 타입을 설정. 여기서는 텍스트를 입력 -->
+        <!-- name: input 태그에서 입력받은 정보를 저장할 변수명 작성 -->
+        <!-- id: 현재 html 문서에서 유일한 값을 명명하여
+                해당 태그를 찾기 쉽도록 만들어준다.
         -->
-        {% csrf_token %}
-        <table>
-            {{ form }}
-            <tr>
-                <th><label for="id_tags_str">Tags:</label></th>
-                <td>
-                    <!-- input 태그 -->
-                    <!-- type: 입력받을 자료의 타입을 설정. 여기서는 텍스트를 입력 -->
-                    <!-- name: input 태그에서 입력받은 정보를 저장할 변수명 작성 -->
-                    <!-- id: 현재 html 문서에서 유일한 값을 명명하여
-                            해당 태그를 찾기 쉽도록 만들어준다.
-                    -->
-                    <input type="text" name="tags_str" id="id_tags_str">
-                </td>
-            </tr>
-        </table>
-        <button type="submit" class="btn btn-primary float-right">
-            Submit
-        </button>
-    </form>
+        <input type="text" name="tags_str" id="id_tags_str"
+               class="textinput textInput form-control">
+    </div>
+    <button type="submit" class="btn btn-primary float-right">
+        Submit
+    </button>
+</form>
 {% endblock %}
