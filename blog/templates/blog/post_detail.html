@@ -59,7 +59,7 @@
                         {% endif %}
                     </figure>
                     <!-- Post content-->
-                    <section class="mb-5">{{ post.content }}</section>
+                    <section class="mb-5">{{ post.get_content_markdown | safe }}</section>
 
                     <!-- Tags -->
                     {% if post.tags.exists %}

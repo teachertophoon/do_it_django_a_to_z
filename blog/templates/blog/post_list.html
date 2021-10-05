@@ -52,9 +52,7 @@
         </div>
         <h2 class="card-title h4">{{ p.title }}</h2>
         <!--<p class="card-text">{{ p.content | truncatewords:45 }}</p>-->
-        {% if p.hook_text %}
-        <h5 class="text-muted">{{ p.hook_text }}</h5>
-        {% endif %}
+        <h5 class="text-muted">{{ p.get_content_markdown | truncatewords_html:45 | safe }}</h5>
 
         <!-- Tags -->
         {% if p.tags.exists %} <!-- [필드명].exists는 값 존재 유무 확인용 -->

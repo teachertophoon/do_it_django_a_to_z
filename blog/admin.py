@@ -1,7 +1,9 @@
 from django.contrib import admin
+from markdownx.admin import MarkdownxModelAdmin
+
 from .models import Post, Category, Tag  # 우리가 만든 Post 클래스 불러오기
 
-admin.site.register(Post) # Post 클래스를 관리자 사이트에 등록
+admin.site.register(Post, MarkdownxModelAdmin) # Post 클래스를 관리자 사이트에 등록
 
 class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
