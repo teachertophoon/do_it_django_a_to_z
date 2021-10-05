@@ -1,3 +1,5 @@
+{% load socialaccount %}
+
 <!-- 네비게이션바 영역 (992px보다 크면 메뉴 확장버튼 숨겨짐, 배경은 밝은색) -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
@@ -31,31 +33,25 @@
                     <a class="nav-link" href="/about_me/">About Me</a>
                 </li>
                 <!-- 네 번째 메뉴 (드롭다운 메뉴)-->
+                {% if user.is_authenticated %}
                 <li class="nav-item dropdown">
                     <!-- 드롭다운 메뉴를 펼쳤다 숨겼다 하는 버튼 -->
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
                        role="button" data-toggle="dropdown">
-                        Dropdown
+                        {{ user.username }}
                     </a>
                     <!-- 드롭다운 메뉴 구성 -->
                     <div class="dropdown-menu">
-                        <!-- 첫 번째 메뉴 -->
-                        <a class="dropdown-item" href="#">Action</a>
-                        <!-- 두 번째 메뉴 -->
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <!-- 메뉴 구분선 -->
-                        <div class="dropdown-divider"></div>
-                        <!-- 세 번째 메뉴 -->
-                        <a class="dropdown-item" href="#">Something else here</a>
+                        <a class="dropdown-item" href="/accounts/logout/">Log Out</a>
                     </div>
                 </li>
-            </ul>
-            <!-- 네비게이션의 우측부분 -->
-            <!-- 로그인 버튼 -->
-            <ul class="navbar-nav">
+                {% else %}
+                <!-- 네비게이션의 우측부분 -->
+                <!-- 로그인 버튼 -->
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Log In</a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>
@@ -76,11 +72,20 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <button type="button" class="btn btn-outline-dark btn-block"><i class="fab fa-google google-icon"></i>&nbsp;&nbsp;Log in with Google</button>
-                        <button type="button" class="btn btn-outline-dark btn-block"><i class="far fa-envelope"></i> Log in with E-mail</button>
+                        <a role="button" class="btn btn-outline-dark btn-block"
+                           href="{% provider_login_url 'google' %}">
+                            <i class="fab fa-google google-icon"></i>
+                            &nbsp;&nbsp;Log in with Google</a>
+                        <a role="button" class="btn btn-outline-dark btn-block"
+                           href="/accounts/login/">
+                            <i class="far fa-envelope"></i>
+                            Log in with Username</a>
                     </div>
                     <div class="col-md-6">
-                        <button type="button" class="btn btn-outline-dark btn-block"><i class="far fa-envelope"></i> Sign up with E-mail</button>
+                        <a role="button" class="btn btn-outline-dark btn-block"
+                           href="/accounts/signup/">
+                            <i class="far fa-envelope"></i>
+                            Sign up with E-mail</a>
                     </div>
                 </div>
             </div>
