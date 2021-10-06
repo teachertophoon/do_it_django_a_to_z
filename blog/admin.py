@@ -1,7 +1,7 @@
 from django.contrib import admin
 from markdownx.admin import MarkdownxModelAdmin
 
-from .models import Post, Category, Tag  # 우리가 만든 Post 클래스 불러오기
+from .models import Post, Category, Tag, Comment  # 우리가 만든 Post 클래스 불러오기
 
 admin.site.register(Post, MarkdownxModelAdmin) # Post 클래스를 관리자 사이트에 등록
 
@@ -17,4 +17,7 @@ admin.site.register(Category, CategoryAdmin)
 
 # 태그 관리 메뉴를 커스텀한 방식으로 추가
 admin.site.register(Tag, TagAdmin)
+
+# 댓글 관리
+admin.site.register(Comment)
 
