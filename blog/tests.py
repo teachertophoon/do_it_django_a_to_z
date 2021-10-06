@@ -415,3 +415,86 @@ class TestView(TestCase):
         self.assertIn('some tag', main_area.text)
         self.assertNotIn('python', main_area.text)
 
+    # 댓글 작성 폼 테스트
+    def test_comment_form(self):
+        # Comment 테이블에 등록된 댓글의 전체 개수 확인하기
+        # setUp() 함수에서 작성한 댓글 하나만 존재하므로 총 댓글 개수는 1개
+        self.assertEqual(Comment.objects.count(), 1)
+        
+        # post_001 포스트 글에 추가된 댓글이 하나인지 테스트
+        self.assertEqual(self.post_001.comment_set.count(), 1)
+
+        # 로그인하지 않은 상태
+        # 로그인하지 않은 상태에서 첫 번째 포스트 상세페이지에 접속이 가능해야 한다.
+        response = self.client.get(self.post_001.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # 댓글 영역을 찾아서
+        comment_area = soup.find('div', id='comment-area')
+
+        # 댓글 영역에 [로그인해야 댓글을 남길 수 있다]는 안내문구가 표시되어야 한다.
+        self.assertIn('Log in and leave a comment', comment_area.text)
+
+        # 로그인 하지 않은 상태에서는 댓글 작성 form이 보이지 않아야 한다.
+        self.assertFalse(comment_area.find('form', id='comment-form'))
+
+        # 로그인한 상태
+        # obama 사용자로 로그인 한다.
+        self.client.login(username='obama', password='somepassword')
+        # 로그인한 상태에서 첫 번째 포스트 글 상세페이지로 이동한다.
+        response = self.client.get(self.post_001.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # 로그인한 상태이기 때문에 댓글 영역에 'Log in and leave a comment'
+        # 메시지가 더이상 표시되지 않는다.
+        comment_area = soup.find('div', id='comment-area')
+        self.assertNotIn('Log in and leave a comment', comment_area.text)
+
+        # 로그인한 상태이기 때문에 댓글을 작성할 수 있는 영역이 노출된다.
+        # 작성한 댓글을 서버로 POST 요청을 보내기 위한 form 태그가 존재하는지 확인
+        comment_form = comment_area.find('form', id='comment-form')
+        # 댓글을 작성하는 영역인 textarea 태그가 존재하는지 확인
+        self.assertTrue(comment_form.find('textarea', id='id_content'))
+
+        # 최종적으로 작성한 댓글을 [포스트 상세페이지 주소 + new_comment/] 주소로
+        # POST 방식으로 서버에 요청을 보낸다.
+        # follow가 True이기 때문에 서버로부터 응답을 받으면 다시 상세페이지로
+        # 접속을 하게 된다.
+        response = self.client.post(
+            self.post_001.get_absolute_url() + 'new_comment/',
+            {
+                'content': "오바마의 댓글입니다."
+            },
+            follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        # 방금 위 코드에서 댓글 하나를 더 추가했으므로 전체 댓글의 수는 2개가 된다.
+        self.assertEqual(Comment.objects.count(), 2)
+
+        # 첫 번째 포스트 글에 댓글 하나를 더 추가했으므로
+        # 첫 번째 포스트 글의 댓글 개수는 2개가 된다.
+        self.assertEqual(self.post_001.comment_set.count(), 2)
+
+        # Comment 테이블에서 제일 마지막에 존재하는 레코드를 가져온 것이니
+        # 제일 최근에 작성한 댓글이고, 이 댓글 객체를 new_comment 변수에 담은 것이다.
+        new_comment = Comment.objects.last()
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # 최근 작성한 댓글의 객체를 이용해서 댓글을 작성한 포스트 글에 접근한 뒤
+        # 실제 페이지에 출력된 Post의 제목과 title 태그의 text를 비교한다.
+        # 이 테스트를 통과한다면 첫 번째 포스트 글의 댓글인 셈이다.
+        self.assertIn(new_comment.post.title, soup.title.text)
+
+        # 댓글 영역을 찾아서 댓글 작성자와 내용이 일치하는지 확인하여 정상등록 됐는지 확인
+        comment_area = soup.find('div', id='comment-area')
+        new_comment_div = comment_area.find('div', id=f'comment-{new_comment.pk}')
+        self.assertIn('obama', new_comment_div.text)
+        self.assertIn('오바마의 댓글입니다.', new_comment_div.text)
+
+
+

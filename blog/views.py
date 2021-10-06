@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
+from blog.forms import CommentForm
 from blog.models import Post, Category, Tag
 from django import forms
 
@@ -57,6 +58,7 @@ class PostDetail(DetailView):
         context['categories'] = Category.objects.all()
         context['no_category_post_count'] = Post.objects.filter(category=None)\
             .count()
+        context['comment_form'] = CommentForm
         return context
 
 # FBV (Function Based View) 방식
@@ -369,3 +371,44 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
                 self.object.tags.add(tag)
 
         return response
+
+# 댓글 작성 POST 요청이 들어올 경우 처리
+def new_comment(request, pk):
+
+    # 로그인한 경우
+    if request.user.is_authenticated:
+        # 요청받은 주소에서 pk 번호를 이용해 Post 테이블을 조회
+        # 해당 pk를 가지는 포스트가 존재한다면 get 동작 수행
+        # 그렇지 않으면 404 예외발생하여 코드 실행을 중단하고
+        # 클라이언트에게 404 응답을 보내게 된다.
+        post = get_object_or_404(Post, pk=pk)
+
+        # request 요청 내용 중 method 변수를 확인하여
+        # POST 요청인지 확인한다.
+        if request.method == 'POST':
+            # CommentForm에 POST 요청받은 내용을 담아 form 객체를 생성
+            comment_form = CommentForm(request.POST)
+            # form 객체 내부의 is_valid() 함수를 실행하여 유효성 검사 후
+            # 이상이 없다면 if문 실행
+            if comment_form.is_valid():
+                # comment_form에 담긴 내용을 DB에 저장하는 동작은 하지만
+                # 트랜젝션(Transaction)은 이뤄지지 않았다. (commit=False)
+                # comment 변수에는 Comment 객체가 담겨져 있다.
+                comment = comment_form.save(commit=False)
+                # comment 객체에 post 필드를 채워준다. (처음 pk로 불러온 Post)
+                comment.post = post
+                # author 필드는 현재 로그인한 사용자의 객체를 담는다.
+                comment.author = request.user
+                # comment 객체의 모든 내용을 채웠으므로
+                # 최종적으로 데이터베이스에 저장한다. 트랜젝션이 이루어진다.
+                comment.save()
+                # 댓글이 작성된 곳으로 페이지 이동한다.
+                return redirect(comment.get_absolute_url())
+        else:
+            # POST 방식이 아닌 요청이 들어온 경우는
+            # 포스트 상세페이지로 다시 이동한다.
+            return redirect(post.get_absolute_url())
+    else:
+        # 로그인하지 않은 사용자가 접근한 경우는 PermissionDenied 예외를 발생시키고
+        # 허가거부 페이지를 응답으로 보내게 된다.
+        raise PermissionDenied
