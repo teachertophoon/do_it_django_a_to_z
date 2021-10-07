@@ -144,6 +144,14 @@
                                     </div>
                                     {{ comment.content | linebreaks }}
                                 </div>
+                                {% if user.is_authenticated and comment.author == user %}
+                                <a role="button"
+                                   class="btn btn-sm btn-info float-right"
+                                   id="comment-{{ comment.pk }}-update-btn"
+                                   href="/blog/update_comment/{{ comment.pk }}/">
+                                    edit
+                                </a>
+                                {% endif %}
                             </div>
                             {% endfor %}
                             {% endif %}

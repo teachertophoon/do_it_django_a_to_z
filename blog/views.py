@@ -5,7 +5,7 @@ from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from blog.forms import CommentForm
-from blog.models import Post, Category, Tag
+from blog.models import Post, Category, Tag, Comment
 from django import forms
 
 
@@ -412,3 +412,15 @@ def new_comment(request, pk):
         # 로그인하지 않은 사용자가 접근한 경우는 PermissionDenied 예외를 발생시키고
         # 허가거부 페이지를 응답으로 보내게 된다.
         raise PermissionDenied
+
+class CommentUpdate(LoginRequiredMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and \
+                request.user == self.get_object().author:
+            return super(CommentUpdate, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+

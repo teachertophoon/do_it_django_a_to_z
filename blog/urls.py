@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('update_comment/<int:pk>/', views.CommentUpdate.as_view()),
+
     # /blog/포스트 글번호/new_comment/ 요청을 받으면
     # views.py의 new_comment FBV방식으로 보낸다.
     path('<int:pk>/new_comment/', views.new_comment),
