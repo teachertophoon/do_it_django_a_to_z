@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('delete_comment/<int:pk>/', views.delete_comment),
     path('update_comment/<int:pk>/', views.CommentUpdate.as_view()),
 
     # /blog/포스트 글번호/new_comment/ 요청을 받으면
