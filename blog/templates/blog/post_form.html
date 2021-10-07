@@ -47,4 +47,28 @@ action (장고에서는 생략): 데이터의 종착지 주소를 작성 (보통
     </button>
 </form>
 {{ form.media }}
+
+<script>
+    function getUrlParams() {
+        var params = {};
+
+        window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+    	    function(str, key, value) {
+        	    params[key] = value;
+            }
+        );
+
+        return params;
+    }
+
+    window.onload = function() {
+        if (getUrlParams().error) {
+            let div = document.createElement("div")
+            div.append("slug가 빈 값입니다.")
+
+            let divTag = document.getElementById('div_id_tags_str')
+            divTag.append(div)
+        }
+    }
+</script>
 {% endblock %}

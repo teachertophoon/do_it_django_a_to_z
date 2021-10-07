@@ -5,12 +5,6 @@
     <title>{% block head_title %}Blog{% endblock %}</title>
     <link href="{% static 'blog/bootstrap/bootstrap.css' %}" rel="stylesheet" type="text/css">
     <script src="https://kit.fontawesome.com/f825ae5235.js" crossorigin="anonymous"></script>
-    <style type="text/css">
-            .google-icon {
-                color: red;
-                line-height: 21px;
-            }
-        </style>
 </head>
 <body>
 
@@ -69,7 +63,6 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
-
 <script>
     function getUrlParams() {
         var params = {};
@@ -83,7 +76,15 @@
         return params;
     }
 
-    console.log(getUrlParams().error)
+    window.onload = function() {
+        console.log("hello")
+
+        if (getUrlParams().error) {
+            let div = document.createElement("div")
+            div.append("slug가 빈 값입니다.")
+            console.log(div.textContent)
+        }
+    }
 </script>
 </body>
 </html>
