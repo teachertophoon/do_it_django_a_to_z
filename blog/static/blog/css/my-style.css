@@ -1,0 +1,17 @@
+.star {
+    display:inline-block;
+    cursor: pointer;
+    background-image: url(https://shopping.pstatic.net/display/p/static/20211001132713/img/sprite/svg/spSw_review_write_svg.svg);
+    background-size: 293px 282px;
+    background-position: -76px -112px;
+    background-color: white;
+    width: 44px;
+    height: 44px;
+    margin: 0 5px;
+    border: 0;
+    outline: 0;
+}
+
+.star-hover {
+    background-position: -128px -112px;
+}

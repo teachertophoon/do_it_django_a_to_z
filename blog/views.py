@@ -401,6 +401,10 @@ def new_comment(request, pk):
                 comment.author = request.user
                 # comment 객체의 모든 내용을 채웠으므로
                 # 최종적으로 데이터베이스에 저장한다. 트랜젝션이 이루어진다.
+                
+                # 우리가 만든 별점 버튼을 이용해서 받은 별점을 comment의 score
+                # 필드에 저장
+                comment.score = request.POST.get('my_score')
                 comment.save()
                 # 댓글이 작성된 곳으로 페이지 이동한다.
                 return redirect(comment.get_absolute_url())
@@ -423,6 +427,19 @@ class CommentUpdate(LoginRequiredMixin, UpdateView):
             return super(CommentUpdate, self).dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
+
+    def form_valid(self, form):
+        response = super(CommentUpdate, self).form_valid(form)
+        my_score = self.request.POST.get('my_score')
+
+        if my_score and (0 < int(my_score) <= 5):
+            self.object.score = my_score
+            self.object.save()
+
+        else:
+            raise ValueError('별점은 1~5점을 입력하셔야 합니다.')
+
+        return response
 
 def delete_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)

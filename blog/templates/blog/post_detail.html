@@ -114,6 +114,18 @@
                                 <!-- placeholder 속성은 어떤 내용을 입력해야 할지에 대한 안내문 역할 -->
                                 <div class="form-group">
                                     {{ comment_form | crispy }}
+                                    <!-- 별점 기능 추가 -->
+                                    <label for="id_stars" class=" requiredField">
+                                        Score<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="form-group" id="id_stars">
+                                        <button class="star" data-value="1" data-name="abc"></button>
+                                        <button class="star" data-value="2"></button>
+                                        <button class="star" data-value="3"></button>
+                                        <button class="star" data-value="4"></button>
+                                        <button class="star" data-value="5"></button>
+                                    </div>
+                                    <input type="hidden" name="my_score" id="id_my_score">
                                 </div>
                                 <!-- textarea에 작성한 댓글을 전송하기 위한 버튼을 생성 -->
                                 <!-- form 태그 내부에 type이 submit인 버튼을 만들어야 전송이 가능하다. -->
