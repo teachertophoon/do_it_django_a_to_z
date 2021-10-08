@@ -3,14 +3,26 @@
 {% block head_title %}Edit Comment - Blog{% endblock %}
 
 {% block main_area %}
-    <h1>Edit Comment</h1>
-    <hr/>
-    <form method="post" id="comment-form">
-        {% csrf_token %}
-        {{ form | crispy }}
-        <br/>
-        <button type="submit" class="btn btn-primary float-right">
-            Submit
-        </button>
-    </form>
+<h1>Edit Comment</h1>
+<hr/>
+<form method="post" id="comment-form">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <!-- 별점 기능 추가 -->
+    <label for="id_stars" class=" requiredField">
+        Score<span class="asteriskField">*</span>
+    </label>
+    <div class="form-group" id="id_stars">
+        <button class="star" data-value="1"></button>
+        <button class="star" data-value="2"></button>
+        <button class="star" data-value="3"></button>
+        <button class="star" data-value="4"></button>
+        <button class="star" data-value="5"></button>
+    </div>
+    <input type="hidden" name="my_score" id="id_my_score">
+    <br/>
+    <button type="submit" class="btn btn-primary float-right">
+        Submit
+    </button>
+</form>
 {% endblock %}
