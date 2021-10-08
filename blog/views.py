@@ -11,9 +11,9 @@ from django import forms
 
 # CBV (Class Based View) 방식
 class PostList(ListView):
-    template_name = 'blog/test_abc.html'
     model = Post
     ordering = '-pk'
+    paginate_by = 5
     # template 명은 post_list.html (모델명_list.html)
     # template로 넘길 때 사용하는 변수명은 post_list (모델명_list)
 
