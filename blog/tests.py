@@ -56,7 +56,8 @@ class TestView(TestCase):
         self.comment_001 = Comment.objects.create(
             post=self.post_001,
             author=self.user_obama,
-            content='첫 번째 댓글입니다.'
+            content='첫 번째 댓글입니다.',
+            score=4
         )
 
     def navbar_test(self, soup):
@@ -465,7 +466,8 @@ class TestView(TestCase):
         response = self.client.post(
             self.post_001.get_absolute_url() + 'new_comment/',
             {
-                'content': "오바마의 댓글입니다."
+                'content': "오바마의 댓글입니다.",
+                'score': 4
             },
             follow=True
         )
@@ -541,6 +543,7 @@ class TestView(TestCase):
             f'/blog/update_comment/{self.comment_001.pk}/',
             {
                 'content': "오바마의 댓글을 수정합니다.",
+                'score': 4
             },
             follow=True
         )
@@ -555,7 +558,8 @@ class TestView(TestCase):
         comment_by_trump = Comment.objects.create(
             post=self.post_001,
             author=self.user_trump,
-            content='트럼프의 댓글입니다.'
+            content='트럼프의 댓글입니다.',
+            score=4
         )
 
         self.assertEqual(Comment.objects.count(), 2)

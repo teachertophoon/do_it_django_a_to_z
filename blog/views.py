@@ -388,6 +388,8 @@ def new_comment(request, pk):
         if request.method == 'POST':
             # CommentForm에 POST 요청받은 내용을 담아 form 객체를 생성
             comment_form = CommentForm(request.POST)
+            score = request.POST.get('my_score');
+            print(score)
             # form 객체 내부의 is_valid() 함수를 실행하여 유효성 검사 후
             # 이상이 없다면 if문 실행
             if comment_form.is_valid():
@@ -404,6 +406,8 @@ def new_comment(request, pk):
                 comment.save()
                 # 댓글이 작성된 곳으로 페이지 이동한다.
                 return redirect(comment.get_absolute_url())
+            else:
+                return redirect(post.get_absolute_url())
         else:
             # POST 방식이 아닌 요청이 들어온 경우는
             # 포스트 상세페이지로 다시 이동한다.

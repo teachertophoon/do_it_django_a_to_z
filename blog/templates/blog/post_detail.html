@@ -114,6 +114,17 @@
                                 <!-- placeholder 속성은 어떤 내용을 입력해야 할지에 대한 안내문 역할 -->
                                 <div class="form-group">
                                     {{ comment_form | crispy }}
+                                    <label for="id_stars" class=" requiredField">
+                                        Score<span class="asteriskField">*</span>
+                                    </label>
+                                    <div class="form-group" id="id_stars">
+                                        <button class="star" data-value="1"></button>
+                                        <button class="star" data-value="2"></button>
+                                        <button class="star" data-value="3"></button>
+                                        <button class="star" data-value="4"></button>
+                                        <button class="star" data-value="5"></button>
+                                    </div>
+                                    <input type="hidden" name="my_score" id="id_my_score">
                                 </div>
                                 <!-- textarea에 작성한 댓글을 전송하기 위한 버튼을 생성 -->
                                 <!-- form 태그 내부에 type이 submit인 버튼을 만들어야 전송이 가능하다. -->
@@ -132,43 +143,48 @@
                             <!-- Single comment-->
                             {% if post.comment_set.exists %}
                             {% for comment in post.comment_set.iterator %}
-                            <div class="d-flex" id="comment-{{ comment.pk }}">
-                                <div class="flex-shrink-0">
-                                    <img class="rounded-circle"
-                                         src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"
-                                         alt="..." />
-                                </div>
-                                <div class="mr-auto">
-                                    <div class="fw-bold">{{ comment.author.username }}&nbsp;&nbsp;
-                                        <small class="text-muted">{{ comment.created_at }}</small>
+                            <div id="comment-{{ comment.pk }}">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <img class="rounded-circle"
+                                             src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"
+                                             alt="..." />
                                     </div>
-                                    {{ comment.content | linebreaks }}
+                                    <div class="mr-auto">
+                                        <div class="fw-bold">{{ comment.author.username }}&nbsp;&nbsp;
+                                            <small class="text-muted">{{ comment.created_at }}</small>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted">Score: {{ comment.score }}</small>
+                                        </div>
+                                        {{ comment.content | linebreaks }}
+                                    </div>
+                                    {% if user.is_authenticated and comment.author == user %}
+                                    <div>
+                                        <a role="button"
+                                           class="btn btn-sm btn-info float-right"
+                                           id="comment-{{ comment.pk }}-update-btn"
+                                           href="/blog/update_comment/{{ comment.pk }}/">
+                                            edit
+                                        </a>
+                                        <a role="button"
+                                           href="#"
+                                           id="comment-{{ comment.pk }}-delete-modal-btn"
+                                           class="btn btn-sm btn-danger"
+                                           data-toggle="modal"
+                                           data-target="#deleteCommentModal-{{ comment.pk }}">
+                                            delete
+                                        </a>
+                                    </div>
+                                    {% endif %}
                                 </div>
-                                {% if user.is_authenticated and comment.author == user %}
                                 <div>
-                                    <a role="button"
-                                       class="btn btn-sm btn-info float-right"
-                                       id="comment-{{ comment.pk }}-update-btn"
-                                       href="/blog/update_comment/{{ comment.pk }}/">
-                                        edit
-                                    </a>
-                                    <a role="button"
-                                       href="#"
-                                       id="comment-{{ comment.pk }}-delete-modal-btn"
-                                       class="btn btn-sm btn-danger"
-                                       data-toggle="modal"
-                                       data-target="#deleteCommentModal-{{ comment.pk }}">
-                                        delete
-                                    </a>
+                                    {% if comment.created_at != comment.modified_at %}
+                                    <p class="text-muted text-right">
+                                        <small>Updated: {{ comment.modified_at }}</small>
+                                    </p>
+                                    {% endif %}
                                 </div>
-                                {% endif %}
-                            </div>
-                            <div>
-                                {% if comment.created_at != comment.modified_at %}
-                                <p class="text-muted text-right">
-                                    <small>Updated: {{ comment.modified_at }}</small>
-                                </p>
-                                {% endif %}
                             </div>
 
                             <!-- Modal -->
