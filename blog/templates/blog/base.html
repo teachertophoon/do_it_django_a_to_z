@@ -25,8 +25,8 @@
                 <!-- 검색 영역의 바디부분 (검색어와 검색버튼이 존재하는 영역)-->
                 <div class="card-body">
                     <div class="input-group">
-                        <input class="form-control" type="text" placeholder="검색어 입력">
-                        <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+                        <input id="search-input" class="form-control" type="text" placeholder="검색어 입력">
+                        <button onclick="searchPost();" class="btn btn-primary" id="button-search" type="button">Go!</button>
                     </div>
                 </div>
             </div>
@@ -58,7 +58,26 @@
         </div>
     </div>
 </div>
+<script>
+    function searchPost() {
+        let searchValue = document.getElementById('search-input').value.trim();
+        if (searchValue.length > 1) {
+            location.href="/blog/search/" + searchValue + "/";
+        }
+        else {
+            alert('검색어(' + searchValue + ')가 너무 짧습니다.');
+        }
+    }
 
+    document.getElementById('search-input')
+        .addEventListener('keyup', function(event) {
+            console.log(event.key);
+            if (event.key === 'Enter') {
+                searchPost();
+            }
+        });
+
+</script>
 {% include 'blog/footer.html' %}
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
