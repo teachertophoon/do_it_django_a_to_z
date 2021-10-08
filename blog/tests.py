@@ -465,7 +465,8 @@ class TestView(TestCase):
         response = self.client.post(
             self.post_001.get_absolute_url() + 'new_comment/',
             {
-                'content': "오바마의 댓글입니다."
+                'content': "오바마의 댓글입니다.",
+                'my_score': 4
             },
             follow=True
         )
@@ -541,6 +542,7 @@ class TestView(TestCase):
             f'/blog/update_comment/{self.comment_001.pk}/',
             {
                 'content': "오바마의 댓글을 수정합니다.",
+                'my_score': 5
             },
             follow=True
         )
