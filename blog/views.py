@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
@@ -11,7 +12,6 @@ from django import forms
 
 # CBV (Class Based View) 방식
 class PostList(ListView):
-    template_name = 'blog/test_abc.html'
     model = Post
     ordering = '-pk'
     # template 명은 post_list.html (모델명_list.html)
@@ -450,4 +450,18 @@ def delete_comment(request, pk):
     else:
         raise PermissionDenied
 
+class PostSearch(PostList):
+    paginate_by = None
 
+    def get_queryset(self):
+        q = self.kwargs['q']
+        post_list = Post.objects.filter(
+            Q(title__contains=q) | Q(tags__name__contains=q)
+        ).distinct()
+        return post_list
+
+    def get_context_data(self, **kwargs):
+        context = super(PostSearch, self).get_context_data()
+        q = self.kwargs['q']
+        context['search_info'] = f'Search: {q} ({self.get_queryset().count()})'
+        return context

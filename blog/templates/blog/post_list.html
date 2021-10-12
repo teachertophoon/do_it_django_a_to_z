@@ -15,6 +15,7 @@
 {% endif %}
 
 <h1>Blog
+    {% if search_info %}<small class="text-muted">{{ search_info }}</small>{% endif %}
     <!-- 만약 views.py로부터 전달받은 category 변수가 존재한다면 (카테고리 페이지 접근 시) -->
     {% if category %}
     <!-- 카테고리 뱃지를 카테고리 페이지 제목 옆에 표시한다. -->
