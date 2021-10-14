@@ -1,0 +1,12 @@
+body {
+    background: url('/static/single_pages/images/amsterdam_sky.jpg') no-repeat
+                center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
+section {
+    margin-bottom: 150px;
+}
