@@ -68,6 +68,12 @@ class Post(models.Model):
     def get_content_markdown(self):
         return markdown(self.content)
 
+    def get_avatar_url(self):
+        if self.author.socialaccount_set.exists():
+            return self.author.socialaccount_set.first().get_avatar_url()
+        else:
+            return f'https://doitdjango.com/avatar/id/333/51f0a0a7cb311278/svg/{self.author.email}/'
+
 class Comment(models.Model):
     # CASCADE이기 때문에 POST글이 삭제되면 댓글도 같이 삭제됩니다.
     post = models.ForeignKey(Post, on_delete=models.CASCADE)

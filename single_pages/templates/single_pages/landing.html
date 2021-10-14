@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Do It Django</title>
+
     <link href="{% static 'blog/bootstrap/bootstrap.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'blog/css/my-style.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'single_pages/css/landing.css' %}" rel="stylesheet" type="text/css">
@@ -22,6 +23,31 @@
                     파이썬 진영의 가장 대표적인 웹프레임워크 중 하나인 django를 이용하여
                     여러분만의 블로그 사이트를 만들어보세요.
                 </p>
+            </div>
+            <div class="col-lg-5 mt-5">
+                <h2 class="text-light">Blog - Recent posts</h2>
+                {% for post in recent_posts %}
+                <div class="card mt-1">
+                    <div class="card-body">
+                        <h6>
+                            <a href="{{ post.get_absolute_url }}"
+                               class="text-decoration-none text-dark">
+                                {{ post.title }}
+                            </a>
+                        </h6>
+                        <span class="badge badge-pill badge-light float-right">
+                            <img class="mr-1 rounded-circle"
+                                 width="20px"
+                                 src="{{ post.get_avatar_url }}"
+                                 alt="{{ post.author }}">
+                            {{ post.author.username }}
+                            &nbsp;
+                            &nbsp;
+                            {{ post.created_at }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
