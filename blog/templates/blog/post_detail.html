@@ -144,22 +144,25 @@
                             <!-- Single comment-->
                             {% if post.comment_set.exists %}
                             {% for comment in post.comment_set.iterator %}
-                            <div id="comment-{{ comment.pk }}">
+                            <div class="mb-4" id="comment-{{ comment.pk }}">
                                 <div class="d-flex">
-                                    <div class="flex-shrink-0">
+                                    <div>
                                         <img class="rounded-circle"
                                              src="{{ comment.get_avatar_url }}"
                                              alt="{{ comment.author }}"
                                              width="60px"/>
                                     </div>
-                                    <div class="mr-auto">
-                                        <div class="fw-bold">{{ comment.author.username }}&nbsp;&nbsp;
+                                    <div>
+                                        <div>
+                                            {{ comment.author.username }}&nbsp;&nbsp;
                                             <small class="text-muted">{{ comment.created_at }} Score: {{ comment.score }}</small>
                                         </div>
-                                        {{ comment.content | linebreaks }}
+                                        <div>
+                                            {{ comment.content | linebreaks }}
+                                        </div>
                                     </div>
                                     {% if user.is_authenticated and comment.author == user %}
-                                    <div>
+                                    <div class="ml-auto">
                                         <a role="button"
                                            class="btn btn-sm btn-info float-right"
                                            id="comment-{{ comment.pk }}-update-btn"
@@ -177,12 +180,30 @@
                                     </div>
                                     {% endif %}
                                 </div>
-                                <div>
-                                    {% if comment.created_at != comment.modified_at %}
-                                    <p class="text-muted text-right">
-                                        <small>Updated: {{ comment.modified_at }}</small>
-                                    </p>
-                                    {% endif %}
+                                <div class="d-flex">
+                                    <div class="ml-auto">
+                                        {% if comment.created_at != comment.modified_at %}
+                                        <p class="text-muted text-right">
+                                            <small>Updated: {{ comment.modified_at }}</small>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-4 ml-5">
+                                    <div>
+                                        <img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+                                    <div>
+                                        <div class="fw-bold">Commenter Name</div>
+                                        And under those conditions, you cannot establish a capital-market evaluation of that enterprise. You can't get investors.
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-4 ml-5">
+                                    <div>
+                                        <img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+                                    <div>
+                                        <div class="fw-bold">Commenter Name</div>
+                                        And under those conditions, you cannot establish a capital-market evaluation of that enterprise. You can't get investors.
+                                    </div>
                                 </div>
                             </div>
 
