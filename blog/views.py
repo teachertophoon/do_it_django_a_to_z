@@ -402,11 +402,19 @@ def new_comment(request, pk):
                 comment.author = request.user
                 # comment 객체의 모든 내용을 채웠으므로
                 # 최종적으로 데이터베이스에 저장한다. 트랜젝션이 이루어진다.
-                
-                # 우리가 만든 별점 버튼을 이용해서 받은 별점을 comment의 score
-                # 필드에 저장
-                comment.score = request.POST.get('my_score')
+
+                parent_id = int(request.POST.get('parent_id'))
+
+                if parent_id:
+                    c = Comment.objects.get(pk=parent_id)
+                    comment.parent_id = c
+                else:
+                    # 우리가 만든 별점 버튼을 이용해서 받은 별점을 comment의 score
+                    # 필드에 저장
+                    comment.score = request.POST.get('my_score')
+
                 comment.save()
+
                 # 댓글이 작성된 곳으로 페이지 이동한다.
                 return redirect(comment.get_absolute_url())
         else:

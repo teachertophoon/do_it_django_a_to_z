@@ -144,6 +144,7 @@
                             <!-- Single comment-->
                             {% if post.comment_set.exists %}
                             {% for comment in post.comment_set.iterator %}
+                            {% if not comment.parent_id %}
                             <div class="mb-4" id="comment-{{ comment.pk }}">
                                 <div class="d-flex">
                                     <div>
@@ -172,10 +173,18 @@
                                         <a role="button"
                                            href="#"
                                            id="comment-{{ comment.pk }}-delete-modal-btn"
-                                           class="btn btn-sm btn-danger"
+                                           class="btn btn-sm btn-danger float-right"
                                            data-toggle="modal"
                                            data-target="#deleteCommentModal-{{ comment.pk }}">
                                             delete
+                                        </a>
+                                        <a role="button"
+                                           href="#"
+                                           id="comment-{{ comment.pk }}-comment-modal-btn"
+                                           class="btn btn-sm btn-primary float-right"
+                                           data-toggle="modal"
+                                           data-target="#addCommentModal-{{ comment.pk }}">
+                                            댓글달기
                                         </a>
                                     </div>
                                     {% endif %}
@@ -189,22 +198,16 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                {% for c in comment.get_child_comments %}
                                 <div class="d-flex mt-4 ml-5">
                                     <div>
                                         <img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
                                     <div>
-                                        <div class="fw-bold">Commenter Name</div>
-                                        And under those conditions, you cannot establish a capital-market evaluation of that enterprise. You can't get investors.
+                                        <div class="fw-bold">{{ c.author.username }}</div>
+                                        {{ c.content | linebreaks }}
                                     </div>
                                 </div>
-                                <div class="d-flex mt-4 ml-5">
-                                    <div>
-                                        <img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                    <div>
-                                        <div class="fw-bold">Commenter Name</div>
-                                        And under those conditions, you cannot establish a capital-market evaluation of that enterprise. You can't get investors.
-                                    </div>
-                                </div>
+                                {% endfor %}
                             </div>
 
                             <!-- Modal -->
@@ -237,6 +240,40 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="modal fade" id="addCommentModal-{{ comment.pk }}"
+                                 tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addModalLabel">
+                                                Are You Sure?
+                                            </h5>
+                                            <button type="button" class="close"
+                                                    data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <form method="POST" action="{{ post.get_absolute_url }}new_comment/">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                {{ comment_form | crispy }}
+                                                <input type="hidden" name="parent_id" value="{{ comment.pk }}">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    Add
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
                             {% endfor %}
                             {% endif %}
                         </div>

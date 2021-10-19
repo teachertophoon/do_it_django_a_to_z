@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -84,6 +85,7 @@ class Comment(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(5)], default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+    parent_id = models.ForeignKey('self', on_delete=models.CASCADE, null=True) # 자기참조
 
     def __str__(self):
         return f'{self.author}::{self.content}::{self.score}'
@@ -96,4 +98,9 @@ class Comment(models.Model):
             return self.author.socialaccount_set.first().get_avatar_url()
         else:
             return f'https://doitdjango.com/avatar/id/333/51f0a0a7cb311278/svg/{self.author.email}/'
+
+    def get_child_comments(self):
+        comments = Comment.objects.filter(parent_id=self.pk)
+        return comments
+
 
