@@ -403,7 +403,8 @@ def new_comment(request, pk):
                 # comment 객체의 모든 내용을 채웠으므로
                 # 최종적으로 데이터베이스에 저장한다. 트랜젝션이 이루어진다.
 
-                parent_id = int(request.POST.get('parent_id'))
+                parent_id_str = request.POST.get('parent_id')
+                parent_id = int(parent_id_str) if parent_id_str else None
 
                 if parent_id:
                     c = Comment.objects.get(pk=parent_id)
