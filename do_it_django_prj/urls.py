@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path('api/', include('api.urls')),
     path('markdownx/', include('markdownx.urls')),
     path('accounts/', include('allauth.urls')),
     path('blog/', include('blog.urls')),
