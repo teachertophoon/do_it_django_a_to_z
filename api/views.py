@@ -7,7 +7,7 @@ from django.views import View
 # CBV 방식
 from django.views.decorators.csrf import csrf_exempt
 
-from api.models import Car
+from api.models import Car, DHT
 
 
 class TestView(View):
@@ -39,6 +39,31 @@ class CarView(View):
 
             car = Car(name=req['name'], brand=req['brand'], price=req['price'])
             car.save()
+
+            data = {
+                'message': 'success'
+            }
+            return JsonResponse(data, status=200)
+
+        data = {
+            'message': 'failed'
+        }
+        return JsonResponse(data, status=404)
+
+class DHTView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DHTView, self).dispatch(request, *args, **kwargs)
+
+    # POST 요청을 처리하기 위해서 post 함수를 재정의
+    def post(self, request, *args, **kwargs):
+        if request.META['CONTENT_TYPE'] == 'application/json':
+            req = json.loads(request.body)
+            print('humidity: ' + str(req['humidity']) + '\n')
+            print('temperature: ' + str(req['temperature']) + '\n')
+
+            dht = DHT(humidity=req['humidity'], temperature=req['temperature'])
+            dht.save()
 
             data = {
                 'message': 'success'
