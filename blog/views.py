@@ -475,3 +475,9 @@ class PostSearch(PostList):
         q = self.kwargs['q']
         context['search_info'] = f'Search: {q} ({self.get_queryset().count()})'
         return context
+
+def ajax(request):
+    return render(
+        request,
+        'blog/ajax.html'
+    )
