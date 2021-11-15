@@ -27,22 +27,31 @@
     async.onreadystatechange = function(event) {
         if (async.readyState == 4 && async.status == 200) {
             console.log(async.responseText);
+            var deserializeJson = JSON.parse(async.responseText);
+            var items = JSON.parse(deserializeJson);
+
+            var aHumidity = ["humidity"];
+            var aTemperature = ["temperature"];
+            var aX = ["x"];
+
+            for (item of items) {
+                aHumidity.push(item.fields.humidity);
+                aTemperature.push(item.fields.temperature);
+                aX.push(item.fields.created_at.split('.')[0]);
+            }
 
             var chart = bb.generate({
               data: {
                 x: "x",
-                columns: [
-                ["x", "2013-01-01", "2013-01-02", "2013-01-03", "2013-01-04", "2013-01-05", "2013-01-06"],
-                ["humidity", 30, 200, 100, 400, 150, 250],
-                ["temperature", 130, 340, 200, 500, 250, 350]
-                ],
+                xFormat: "%Y-%m-%dT%H:%M:%S",
+                columns: [aX, aHumidity, aTemperature],
                 type: "line", // for ESM specify as: line()
               },
               axis: {
                 x: {
                   type: "timeseries",
                   tick: {
-                    format: "%Y/%m/%d"
+                    format: "%Y/%m/%d %H:%M:%S"
                   }
                 }
               },
