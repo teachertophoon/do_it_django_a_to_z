@@ -71,18 +71,17 @@
             var request = new XMLHttpRequest();
             request.onreadystatechange = function(event) {
                 if (request.readyState == 4 && request.status == 200) {
-                    console.log(request.responseText);
-                    var response = request.responseText;
+                    var response = JSON.parse(request.responseText);
                     if (response.message == 'success') {
                         if (response.type == 'LED'
                             && response.action_result == 'on') {
-                            this.setAttribute("data-state", "1");
-                            this.innerHTML = "LED 끄기";
+                            btnLed.setAttribute("data-state", "1");
+                            btnLed.innerHTML = "LED 끄기";
                         }
                         else if (response.type == 'LED'
                             && response.action_result == 'off') {
-                            this.setAttribute("data-state", "0");
-                            this.innerHTML = "LED 켜기";
+                            btnLed.setAttribute("data-state", "0");
+                            btnLed.innerHTML = "LED 켜기";
                         }
                     }
                 }
