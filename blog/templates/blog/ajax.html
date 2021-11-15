@@ -61,6 +61,26 @@
             };
     async.open('GET', '/api/dht/', true);
     async.send();
+
+    // 아두이노 서버로 요청 보내기(LED 불 켜기)
+    window.onload = function() {
+        var btnLed = document.getElementById('btn-led');
+        btnLed.addEventListener('click', function() {
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function(event) {
+                if (request.readyState == 4 && request.status == 200) {
+                    console.log(request.responseText);
+                }
+            };
+        });
+        request.open('POST', '아두이노 IP 주소', true);
+
+        var body = {
+            'type': 'LED',
+            'action': 'on'
+        };
+        request.send(JSON.stringify(body));
+    };
 </script>
 </body>
 </html>
