@@ -73,11 +73,11 @@
                 }
             };
 
-            request.open('POST', '아두이노 IP 주소', true);
+            request.open('POST', 'http://192.168.0.141/', true);
 
             var body = {
-                'type': 'LED',
-                'action': 'on'
+                "type": "LED",
+                "action": "on"
             };
             request.send(JSON.stringify(body));
         });
