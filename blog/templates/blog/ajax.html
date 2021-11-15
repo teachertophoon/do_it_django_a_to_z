@@ -13,7 +13,7 @@
 <body>
 
 {% include 'blog/navbar.html' %}
-<button class="btn btn-primary" id="btn-led">LED 켜기</button>
+<button class="btn btn-primary" id="btn-led" data-state="0">LED 켜기</button>
 <div id="chart"></div>
 
 {% include 'blog/footer.html' %}
@@ -66,19 +66,43 @@
     window.onload = function() {
         var btnLed = document.getElementById('btn-led');
         btnLed.addEventListener('click', function() {
+            var state = this.dataset.state;
+
             var request = new XMLHttpRequest();
             request.onreadystatechange = function(event) {
                 if (request.readyState == 4 && request.status == 200) {
                     console.log(request.responseText);
+                    var response = request.responseText;
+                    if (response.message == 'success') {
+                        if (response.type == 'LED'
+                            && response.action_result == 'on') {
+                            this.setAttribute("data-state", "1");
+                            this.innerHTML = "LED 끄기";
+                        }
+                        else if (response.type == 'LED'
+                            && response.action_result == 'off') {
+                            this.setAttribute("data-state", "0");
+                            this.innerHTML = "LED 켜기";
+                        }
+                    }
                 }
             };
 
             request.open('POST', 'http://192.168.0.141/', true);
 
-            var body = {
-                "type": "LED",
-                "action": "on"
-            };
+            var body;
+            if (state == 0) {
+                body = {
+                    "type": "LED",
+                    "action": "on"
+                };
+            }
+            else if (state == 1) {
+                body = {
+                    "type": "LED",
+                    "action": "off"
+                };
+            }
             request.send(JSON.stringify(body));
         });
 
