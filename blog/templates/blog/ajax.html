@@ -13,7 +13,7 @@
 <body>
 
 {% include 'blog/navbar.html' %}
-
+<button class="btn btn-primary" id="btn-led">LED 켜기</button>
 <div id="chart"></div>
 
 {% include 'blog/footer.html' %}
@@ -72,14 +72,16 @@
                     console.log(request.responseText);
                 }
             };
-        });
-        request.open('POST', '아두이노 IP 주소', true);
 
-        var body = {
-            'type': 'LED',
-            'action': 'on'
-        };
-        request.send(JSON.stringify(body));
+            request.open('POST', '아두이노 IP 주소', true);
+
+            var body = {
+                'type': 'LED',
+                'action': 'on'
+            };
+            request.send(JSON.stringify(body));
+        });
+
     };
 </script>
 </body>
